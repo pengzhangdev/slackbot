@@ -21,6 +21,8 @@ class PluginsManager(object):
         'default_reply': {}
     }
 
+    tick_works = list()
+
     def init_plugins(self):
         if hasattr(settings, 'PLUGINS'):
             plugins = settings.PLUGINS

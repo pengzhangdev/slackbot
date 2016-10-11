@@ -8,6 +8,7 @@ import traceback
 from functools import wraps
 
 import six
+from six.moves import _thread
 from slackbot.manager import PluginsManager
 from slackbot.utils import WorkerPool
 from slackbot import settings
@@ -37,10 +38,18 @@ class MessageDispatcher(object):
 
     def start(self):
         self._pool.start()
+        _thread.start_new_thread(self.tick, tuple())
 
     def dispatch_msg(self, msg):
         category = msg[0]
         msg = msg[1]
+
+        if category == 'tick':
+            for func in self._plugins.tick_works:
+                func(Message(self._client, msg))
+
+            return
+
         if not self._dispatch_msg_handler(category, msg):
             if category == u'respond_to':
                 if not self._dispatch_msg_handler('default_reply', msg):
@@ -70,6 +79,9 @@ class MessageDispatcher(object):
                                                       '{}\n{}'.format(reply,
                                                                       tb))
         return responded
+
+    def _on_tick(self):
+        self._pool.add_task(('tick', ''))
 
     def _on_new_message(self, msg):
         # ignore edits
@@ -141,6 +153,11 @@ class MessageDispatcher(object):
                 if event.get('type') != 'message':
                     continue
                 self._on_new_message(event)
+            time.sleep(1)
+
+    def tick(self):
+        while True:
+            self._on_tick()
             time.sleep(1)
 
     def _default_reply(self, msg):
@@ -247,6 +264,14 @@ class Message(object):
             when using a bot integration)
         """
         self._client.rtm_send_message(self._body['channel'], text)
+
+    @unicode_compact
+    def send_to(self, name, text):
+        """
+        Send a message to someone or channel using RTM API
+        """
+        channel_id = self._client.find_channel_by_name(name)
+        self._client.rtm_send_message(channel_id, text)
 
     def react(self, emojiname):
         """

@@ -64,6 +64,9 @@ def listen_to(matchstr, flags=0):
 
     return wrapper
 
+def tick_task(func):
+    PluginsManager.tick_works.append(func)
+    logger.info('add job %s to tick works', func.__name__)
 
 # def default_reply(matchstr=r'^.*$', flags=0):
 def default_reply(*args, **kwargs):
