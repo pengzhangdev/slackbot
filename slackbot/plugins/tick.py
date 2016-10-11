@@ -20,6 +20,7 @@ from slackbot.bot import tick_task
 
 count = 0
 next_time=0
+
 @tick_task
 def hello(message):
     global count
@@ -27,6 +28,7 @@ def hello(message):
     now = time.time()
     if now < next_time:
         return
+    return
     next_time = now + 5         # every 5 seconds
     message.send_to('werther0331', 'hello {}'.format(count))
     count += 1
