@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 
 DEBUG = False
 
@@ -10,7 +11,8 @@ PLUGINS = [
 
 ERRORS_TO = None
 
-# API_TOKEN = '###token###'
+# overwrite in config.json
+API_TOKEN = '###token###'
 
 '''
 Setup a comma delimited list of aliases that the bot will respond to.
@@ -41,16 +43,33 @@ for key in os.environ:
         name = key[9:]
         globals()[name] = os.environ[key]
 
-try:
-    from slackbot_settings import *
-except ImportError:
-    try:
-        from local_settings import *
-    except ImportError:
-        pass
+config_load = {}
+with open("config.json", 'rb') as data:
+    config_load.update(json.load(data))
 
-# convert default_reply to DEFAULT_REPLY
-try:
-    DEFAULT_REPLY = default_reply
-except NameError:
-    pass
+# update from config.json
+API_TOKEN = config_load.get('api_token', "None")
+DEBUG = config_load.get("debug", False)
+ERRORS_TO = config_load.get("errors_to", None)
+DEFAULT_REPLY = config_load.get("default_reply", None)
+plugin_configs = config_load.get("plugins", [])
+PLUGIN_CONFIGS = {}
+for c in plugin_configs:
+    job = c.get('task', None)
+    if job != None:
+        PLUGIN_CONFIGS['%s' % (job)] = c
+
+
+# try:
+#     from slackbot_settings import *
+# except ImportError:
+#     try:
+#         from local_settings import *
+#     except ImportError:
+#         pass
+
+# # convert default_reply to DEFAULT_REPLY
+# try:
+#     DEFAULT_REPLY = default_reply
+# except NameError:
+#     pass

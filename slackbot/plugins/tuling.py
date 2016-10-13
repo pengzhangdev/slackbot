@@ -19,10 +19,13 @@ import requests
 import json
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
+from slackbot.bot import plugin_init
 
 class TulingBot(object):
-    def __init__(self, key):
+    def __init__(self, key, debug, enable):
         self.tuling_key = key
+        self.debug = debug
+        self.enable = enable
 
     def tuling_auto_reply(self, uid, msg):
         if self.tuling_key:
@@ -56,11 +59,23 @@ class TulingBot(object):
         else:
             return u"知道啦"
 
-tuling = TulingBot("5b97aa5d789844c7b8377875c32b7384")
+tuling = None
+
+@plugin_init
+def init_tuling(config):
+    global tuling
+    enable = config.get('enable', False)
+    debug = config.get('debug', False)
+    api_key = config.get('api_key', '00')
+    tuling = TulingBot(api_key, debug, enable)
 
 @respond_to(r'(.*)')
 @listen_to(r'(.*)')
 def tulingbot(message, rest):
+    global tuling
+    if tuling.enable == False:
+        return
+
     body = message.body
     uid = ""
     channel = body['channel']

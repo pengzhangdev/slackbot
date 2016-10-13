@@ -68,6 +68,12 @@ def tick_task(func):
     PluginsManager.tick_works.append(func)
     logger.info('add job %s to tick works', func.__name__)
 
+def plugin_init(func):
+    # function name: init_$module
+    config_name = func.__name__.split('_')[1]
+    config = settings.PLUGIN_CONFIGS.get(config_name, {}).get('config', {})
+    func(config)
+
 # def default_reply(matchstr=r'^.*$', flags=0):
 def default_reply(*args, **kwargs):
     """

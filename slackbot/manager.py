@@ -35,6 +35,9 @@ class PluginsManager(object):
     def _load_plugins(self, plugin):
         logger.info('loading plugin "%s"', plugin)
         path_name = None
+        plugins_configs = {}
+        if hasattr(settings, "PLUGIN_CONFIGS"):
+            plugins_configs = settings.PLUGIN_CONFIGS
 
         if PY2:
             import imp
@@ -58,6 +61,8 @@ class PluginsManager(object):
             module_list = ['.'.join((plugin, os.path.split(f)[-1][:-3])) for f
                            in module_list]
         for module in module_list:
+            if module.split('.')[-1] not in plugins_configs:
+                continue
             try:
                 import_module(module)
             except:

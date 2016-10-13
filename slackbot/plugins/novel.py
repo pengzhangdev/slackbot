@@ -19,6 +19,7 @@ from BeautifulSoup import BeautifulSoup
 from urllib2 import urlopen
 
 from slackbot.bot import tick_task
+from slackbot.bot import plugin_init
 
 
 class Novel(object):
@@ -51,7 +52,7 @@ class Novel(object):
         nlist = obj[0].findAll('a')
         for l in nlist:
             if l.string not in self._cached_contents:
-                self._updated_contents.append(l.string)
+                self._updated_contents.append("%s -.- %s%s" % (l.string, self._url, l.get('href', "")))
             self._contents.append(l.string)
         self._cached_contents = self._contents
 
@@ -75,25 +76,50 @@ class Novel(object):
 next_time = time.time() + 30    # wait for 30 seconds to start
 novels = list()
 
+_enable = False
+_debug = False
+_source_url = list()
+
+@plugin_init
+def init_novel(config):
+    global _enable
+    global _debug
+    global _source_url
+    _enable = config.get('enable', False)
+    _debug = config.get('debug', False)
+    sources = config.get('sources', [])
+    for source in sources:
+        en = source.get('enable', False)
+        if en == False:
+            continue
+        _source_url.append(source.get('url', ""))
+
 @tick_task
 def novel_worker(message):
     url = 'http://www.23wx.com/html/55/55035/'
     global next_time
+    global _source_url
     now = time.time()
     if now < next_time:
         return
 
     next_time = now + 6*60*60
     if len(novels) == 0:
-        novels.append(Novel(url))
+        for url in _source_url:
+            novels.append(Novel(url))
 
     for novel in novels:
         novel.refresh()
         title = novel.title
         updated = novel.latest_contents
         if len(updated) != 0:
-            print("%s updtes:  %s" % (title, updated[-1]))
-            message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
+            if len(updated) < 10:
+                print("%s updtes:  %s" % (title, updated[0]))
+                message.send_to('werther0331', u'%s updates : %s' % (title, updated[0]))
+            else:
+                # first inited
+                print("%s updtes:  %s" % (title, updated[-2]))
+                message.send_to('werther0331', u'%s updates : %s' % (title, updated[-2]))
         else:
             print("No update for %s" % (title))
 

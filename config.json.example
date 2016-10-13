@@ -1,0 +1,45 @@
+{
+    "api_token": "xoxb-69168679399-bpRKCMJCa25hqhTiKtzPv4UE",
+    "debug": false,
+    "errors_to": "",
+    "default_reply": "",
+    "plugins": [
+        {
+            "task": "189",
+            "config": {
+                "enable": true,
+                "debug": false,
+                "numbers": [
+                    {"number": "180"},
+                    {"number": "181"},
+                    {"number": "189"}
+                ]
+            }
+        },
+        {
+            "task": "novel",
+            "config": {
+                "enable": true,
+                "debug": false,
+                "sources": [
+                    {
+                        "enable": true,
+                        "url": "http://www.23wx.com/html/55/55035/"
+                    },
+                    {
+                        "enable": true,
+                        "url": "http://www.23wx.com/html/57/57599/"
+                    }
+                ]
+            }
+        },
+        {
+            "task": "tuling",
+            "config": {
+                "enable": true,
+                "debug": false,
+                "api_key": "5b97aa5d789844c7b8377875c32b7384"
+            }
+        }
+    ]
+}
