@@ -37,8 +37,14 @@ class Novel(object):
         self._update_novel_contents()
 
     def _create_soup(self):
-        f = urlopen(self._url);
-        buff = f.read()
+        buff = ""
+        try:
+            f = urlopen(self._url);
+            buff = f.read()
+        except:
+            time.sleep(1)
+            f = urlopen(self._url);
+            buff = f.read()
         return BeautifulSoup(buff)
 
     def _get_title(self):
@@ -115,13 +121,15 @@ def novel_worker(message):
         if len(updated) != 0:
             if len(updated) < 10:
                 # print("%s updtes:  %s" % (title, updated[0]))
-                message.send_to('werther0331', u'%s updates : %s%s' % (title, self._url, updated[0]))
+                print("Novel updated")
+                message.send_to('werther0331', u'%s updates : %s' % (title, updated[0]))
             else:
                 # first inited
                 # print("%s updtes:  %s" % (title, updated[-2]))
-                message.send_to('werther0331', u'%s updates : %s%s' % (title, self._url, updated[-2]))
-        # else:
-        #    print("No update for %s" % (title.decode("gbk")))
+                print("First fetch")
+                message.send_to('werther0331', u'%s updates : %s' % (title, updated[-2]))
+        else:
+            print("No updates")
 
 # def test_main():
 #     nurl = 'http://www.23wx.com/html/55/55035/'
