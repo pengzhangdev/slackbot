@@ -37,7 +37,15 @@ class SlackClient(object):
             self.rtm_connect()
 
     def rtm_connect(self):
-        reply = self.webapi.rtm.start().body
+        count = 5
+        while count > 0:
+            try:
+                reply = self.webapi.rtm.start().body
+                break
+            except:
+                print("rtm start failed, retry");
+                count -= 1
+                time.sleep(1)
         time.sleep(1)
         self.parse_slack_login_data(reply)
 
