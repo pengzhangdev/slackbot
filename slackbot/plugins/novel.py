@@ -85,12 +85,14 @@ novels = list()
 _enable = False
 _debug = False
 _source_url = list()
+_interval = 6*60*60
 
 @plugin_init
 def init_novel(config):
     global _enable
     global _debug
     global _source_url
+    global _interval
     _enable = config.get('enable', False)
     _debug = config.get('debug', False)
     sources = config.get('sources', [])
@@ -99,17 +101,19 @@ def init_novel(config):
         if en == False:
             continue
         _source_url.append(source.get('url', ""))
+    _interval = config.get('interval', 6*60*60)
 
 @tick_task
 def novel_worker(message):
     url = 'http://www.23wx.com/html/55/55035/'
     global next_time
     global _source_url
+    global _interval
     now = time.time()
     if now < next_time:
         return
 
-    next_time = now + 6*60*60
+    next_time = now + _interval
     if len(novels) == 0:
         for url in _source_url:
             novels.append(Novel(url))
@@ -121,15 +125,16 @@ def novel_worker(message):
         if len(updated) != 0:
             if len(updated) < 10:
                 # print("%s updtes:  %s" % (title, updated[0]))
-                print("Novel updated")
+                # print("Novel updated")
                 message.send_to('werther0331', u'%s updates : %s' % (title, updated[0]))
             else:
                 # first inited
                 # print("%s updtes:  %s" % (title, updated[-2]))
-                print("First fetch")
+                # print("First fetch")
                 message.send_to('werther0331', u'%s updates : %s' % (title, updated[-2]))
         else:
-            print("No updates")
+            # print("No updates")
+            pass
 
 # def test_main():
 #     nurl = 'http://www.23wx.com/html/55/55035/'

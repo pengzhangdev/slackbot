@@ -21,6 +21,7 @@
             "config": {
                 "enable": true,
                 "debug": false,
+                "interval": 10800,
                 "sources": [
                     {
                         "enable": true,
