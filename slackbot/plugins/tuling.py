@@ -69,9 +69,9 @@ def init_tuling(config):
     api_key = config.get('api_key', '00')
     tuling = TulingBot(api_key, debug, enable)
 
-@respond_to(r'(.*)')
-@listen_to(r'(.*)')
-def tulingbot(message, rest):
+@respond_to(r'^[^a-zA-Z0-9]')
+@listen_to(r'^[^a-zA-Z0-9]')
+def tulingbot(message):
     global tuling
     if tuling.enable == False:
         return

@@ -8,6 +8,8 @@ from slackbot.bot import Bot
 
 
 def main():
+    reload(sys)
+    sys.setdefaultencoding('utf8')
     kw = {
         'format': '[%(asctime)s] %(message)s',
         'datefmt': '%m/%d/%Y %H:%M:%S',

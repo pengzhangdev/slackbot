@@ -40,6 +40,19 @@
                 "debug": false,
                 "api_key": "5b97aa5d789844c7b8377875c32b7384"
             }
+        },
+        {
+            "task": "command",
+            "config": {
+                "enable": true,
+                "debug": false,
+                "commands": [
+                    {
+                        "command": "bt",
+                        "enable": true
+                    }
+                ]
+            }
         }
     ]
 }
