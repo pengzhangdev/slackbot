@@ -73,13 +73,14 @@ class CommandBT(object):
                 result += c.string
         return result
 
-    def _create_list(self, buf):
+    def _create_list(self, buf, limits=5):
         result = list()
         soup = BeautifulSoup.BeautifulSoup(buf)
-        objs = soup.findAll('dl', limit=5)
+        objs = soup.findAll('dl', limit=limits)
         for obj in objs:
             #print('obj: {}'.format(obj))
-            title = self._soup_strings(obj.findAll('a', limit=1)[0].contents).strip('<b>').strip('</b>')
+            title = "*" + self._soup_strings(obj.findAll('a', limit=1)[0].contents).strip('<b>').strip('</b>') + "*"
+            magnet = ""
             #print("title: %s" % (title))
             info = ""
             #print("span {}".format(obj.findAll('span', limit=6)))
@@ -90,19 +91,21 @@ class CommandBT(object):
                 if s != u'磁力链接':
                     info = info + s + ";"
                 else:
-                    info = info + "\nurl: " + span.a.get('href', "None")
-            result.append(title + "\ninfo: " + info)
+                    #info = info + "\n**" + span.a.get('href', "None") + "**"
+                    magnet = span.a.get('href', "None")
+            result.append(title + "\n" + "_" + info + "_")
+            result.append(magnet)
         return result
 
     def search(self, contents):
-        self._enc = base64.b64encode(contents).strip('=')
-        self._sort = CommandBT.SORT_RELATIVE
+        self._enc = base64.b64encode(contents).strip('=').replace('/', '_')
+        self._sort = CommandBT.SORT_HOT
         self._type = CommandBT.TYPE_ALL
         self._page = 1
         url = self._btdigg % (self._enc, self._page, self._sort, self._type)
         f = self._browser_base_urlopen(url)
         buf = f.read()
-        return self._create_list(buf)
+        return self._create_list(buf, limits=1)
 
     def search_with_sort(self, sort_string):
         if sort_string == "relative":
