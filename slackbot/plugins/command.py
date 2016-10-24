@@ -14,6 +14,9 @@
 #
 #
 
+import os
+import sys
+import traceback
 import re
 import urllib2
 import cookielib
@@ -141,6 +144,48 @@ class CommandBT(object):
         return self._enable
 
 
+class CommandBot(object):
+    def __init__(self, config):
+        self._enable = config.get('enable', False)
+        self._url = config.get('url', "https://raw.githubusercontent.com/pengzhangdev/slackbot/develop/")
+        self._opener = None
+
+    def update(self, path):
+        url = self._url + path
+        tmp_file = path + '.tmp'
+        f = self._browser_base_urlopen(url)
+        tmpf = open(tmp_file, 'wb')
+        tmpf.write(f.read())
+        os.rename(tmp_file, path)
+
+    def _browser_base_urlopen(self, url):
+        cookie_support= urllib2.HTTPCookieProcessor(cookielib.CookieJar())
+        self._opener = urllib2.build_opener(cookie_support,urllib2.HTTPHandler)
+        urllib2.install_opener(self._opener)
+        user_agents = [
+            'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11',
+            'Opera/9.25 (Windows NT 5.1; U; en)',
+            'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)',
+            'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.5 (like Gecko) (Kubuntu)',
+            'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12',
+            'Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.2.9',
+            "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.7 (KHTML, like Gecko) Ubuntu/11.04 Chromium/16.0.912.77 Chrome/16.0.912.77 Safari/535.7",
+            "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0 ",
+        ]
+        agent = random.choice(user_agents)
+        self._opener.addheaders = [("User-agent",agent),("Accept","*/*"),('Referer','https://www.google.com')]
+        res = self._opener.open(url)
+        return res
+
+    def restart(self):
+        python = sys.executable
+        os.execl(python, python, * sys.argv)
+
+    @property
+    def enabled(self):
+        return self._enable
+
+
 Objs = dict()
 
 def command_parser(commands, argc):
@@ -158,6 +203,8 @@ def init_command(config):
     for c in config.get("commands", {}):
         if c.get('command', "") == 'bt':
             Objs['bt'] = CommandBT(c)
+        if c.get('command', "") == 'bot':
+            Objs['bot'] = CommandBot(c)
 
 @respond_to(r'bt [\s]*[a-zA-Z0-9]+ (.+)')
 @listen_to(r'bt [\s]*[a-zA-Z0-9]+ (.+)')
@@ -181,3 +228,27 @@ def command_bt(message, rest):
 
     for r in result:
         message.reply(r)
+
+@respond_to(r'bot [\s]*[a-zA-Z0-9]+ (.+)')
+@listen_to(r'bot [\s]*[a-zA-Z0-9]+ (.+)')
+def command_bot(message, rest):
+    bot = Objs.get('bot', None)
+    if bot == None:
+        return
+
+    if bot.enabled == False:
+        return
+
+    contents = message.body.get('text', "")
+    _, command, rest = command_parser(contents, 3)
+    # print("{}".format(contents))
+    try:
+        if command == 'update':
+            for r in rest.split():
+                print("update %s" % (r))
+                bot.update(r)
+            bot.restart()
+            os.exit(0)
+    except:
+        tb = u'```\n{}\n```'.format(traceback.format_exc())
+        message.reply('{}\n{}'.format(contents, tb))
