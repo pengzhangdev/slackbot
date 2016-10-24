@@ -98,7 +98,7 @@ class CommandBT(object):
         return result
 
     def search(self, contents):
-        self._enc = base64.b64encode(contents).strip('=').replace('/', '_')
+        self._enc = base64.b64encode(contents).strip('=').replace('/', '_').replace('+', '-')
         self._sort = CommandBT.SORT_HOT
         self._type = CommandBT.TYPE_ALL
         self._page = 1
