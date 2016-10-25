@@ -126,7 +126,8 @@ def novel_worker(message):
             if len(updated) < 10:
                 # print("%s updtes:  %s" % (title, updated[0]))
                 # print("Novel updated")
-                message.send_to('werther0331', u'%s updates : %s' % (title, updated[0]))
+                for u in updated:
+                    message.send_to('werther0331', u'%s updates : %s' % (title, u))
             else:
                 # first inited
                 # print("%s updtes:  %s" % (title, updated[-2]))
