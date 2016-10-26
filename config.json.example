@@ -25,11 +25,18 @@
                 "sources": [
                     {
                         "enable": true,
+                        "mode": "chase",
                         "url": "http://www.23wx.com/html/55/55035/"
                     },
                     {
                         "enable": true,
+                        "mode": "chase",
                         "url": "http://www.23wx.com/html/57/57599/"
+                    },
+                    {
+                        "enable": true,
+                        "mode": "roam",
+                        "url": "http://www.23wx.com/html/9/9932/"
                     }
                 ]
             }
@@ -50,6 +57,10 @@
                 "commands": [
                     {
                         "command": "bt",
+                        "enable": true
+                    },
+                    {
+                        "command": "bot",
                         "enable": true
                     }
                 ]
