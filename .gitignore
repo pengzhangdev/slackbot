@@ -13,3 +13,11 @@ slackbot_test_settings.py
 /dist
 /*.egg-info
 .cache
+save/
+bin/
+lib/
+local/
+include/
+config.json
+share/
+pip-selfcheck.json
