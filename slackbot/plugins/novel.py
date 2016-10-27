@@ -149,26 +149,30 @@ def novel_worker(message):
             mode = s.get('mode', "")
             novels.append(Novel(url, mode))
 
-    for novel in novels:
-        novel.refresh()
-        title = novel.title
-        updated = novel.latest_contents
-        if len(updated) != 0:
-            if len(updated) < 10:
-                # print("%s updtes:  %s" % (title, updated[0]))
-                # print("Novel updated")
-                for u in updated:
-                    message.send_to('werther0331', u'%s updates : %s' % (title, u))
-                    NovelSaved[title] = u.split('-.-')[0][:-1]
+    try:
+        for novel in novels:
+            novel.refresh()
+            title = novel.title
+            updated = novel.latest_contents
+            if len(updated) != 0:
+                if len(updated) < 10:
+                    # print("%s updtes:  %s" % (title, updated[0]))
+                    # print("Novel updated")
+                    for u in updated:
+                        message.send_to('werther0331', u'%s updates : %s' % (title, u))
+                        NovelSaved[title] = u.split('-.-')[0][:-1]
+                else:
+                    # first inited
+                    # print("%s updtes:  %s" % (title, updated[-2]))
+                    # print("First fetch")
+                    message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
+                    NovelSaved[title] = updated[-1].split('-.-')[0][:-1]
             else:
-                # first inited
-                # print("%s updtes:  %s" % (title, updated[-2]))
-                # print("First fetch")
-                message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
-                NovelSaved[title] = updated[-1].split('-.-')[0][:-1]
-        else:
-            # print("No updates")
-            pass
+                # print("No updates")
+                pass
+    except Exception as e:
+        next_time = now + 5*60
+        raise e
 
     with open('save/novel.json', "w") as f:
         f.write(json.dumps(NovelSaved, ensure_ascii = False))
