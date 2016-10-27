@@ -17,6 +17,7 @@
 import re
 import requests
 import json
+import base64
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import plugin_init
@@ -30,7 +31,9 @@ class TulingBot(object):
     def tuling_auto_reply(self, uid, msg):
         if self.tuling_key:
             url = "http://www.tuling123.com/openapi/api"
-            user_id = uid.replace('@', '')[:30]
+            user_id = base64.b64encode(uid)
+            # print("user_id : %s" % (user_id))
+            # user_id = uid.replace('@', '')[:30]
             # timeArray = time.strptime(a, "%Y-%m-%d %H:%M:%S")
             # timeStamp = int(time.mktime(timeArray))
             # keyParam = "86b1e78e44204f4e" + str(timeStamp) + self.tuling_key
