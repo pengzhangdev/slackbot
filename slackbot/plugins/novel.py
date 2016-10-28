@@ -18,10 +18,13 @@ import time
 import json
 import os
 from BeautifulSoup import BeautifulSoup
-from urllib2 import urlopen
+import urllib2
+import cookielib
+import random
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
+from slackbot.bot import respond_to
 
 NovelSaved = dict()
 
@@ -35,6 +38,26 @@ class Novel(object):
         self._mode = mode
         #self._update()
 
+    def _browser_base_urlopen(self, url):
+        opener = None
+        cookie_support= urllib2.HTTPCookieProcessor(cookielib.CookieJar())
+        opener = urllib2.build_opener(cookie_support,urllib2.HTTPHandler)
+        urllib2.install_opener(opener)
+        user_agents = [
+            'Mozilla/5.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11',
+            'Opera/9.25 (Windows NT 5.1; U; en)',
+            'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)',
+            'Mozilla/5.0 (compatible; Konqueror/3.5; Linux) KHTML/3.5.5 (like Gecko) (Kubuntu)',
+            'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12',
+            'Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.2.9',
+            "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.7 (KHTML, like Gecko) Ubuntu/11.04 Chromium/16.0.912.77 Chrome/16.0.912.77 Safari/535.7",
+            "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:10.0) Gecko/20100101 Firefox/10.0 ",
+        ]
+        agent = random.choice(user_agents)
+        opener.addheaders = [("User-agent",agent),("Accept","*/*"),('Referer','https://www.google.com')]
+        res = opener.open(url)
+        return res
+
     def _update(self):
         self._title = self._get_title()
         self._update_novel_contents()
@@ -42,11 +65,13 @@ class Novel(object):
     def _create_soup(self):
         buff = ""
         try:
-            f = urlopen(self._url);
+            #f = urlopen(self._url);
+            f = self._browser_base_urlopen(self._url)
             buff = f.read()
         except:
             time.sleep(1)
-            f = urlopen(self._url);
+            #f = urlopen(self._url);
+            f = self._browser_base_urlopen(self._url)
             buff = f.read()
         return BeautifulSoup(buff)
 
@@ -177,6 +202,12 @@ def novel_worker(message):
     with open('save/novel.json', "w") as f:
         f.write(json.dumps(NovelSaved, ensure_ascii = False))
 
+
+@respond_to(r'novel [\s]*[a-zA-Z0-9]+')
+def novel_command(message):
+    global next_time
+    next_time = 0
+
 # def test_main():
 #     nurl = 'http://www.23wx.com/html/55/55035/'
 #     n = Novel(nurl)
@@ -191,3 +222,9 @@ def novel_worker(message):
 
 # if __name__ == '__main__':
 #     test_main()
+
+
+
+
+
+
