@@ -34,7 +34,7 @@ class Novel(object):
         self._soup = self._create_soup()
         self._contents = list()
         self._updated_contents = list()
-        self._title = ""
+        self._title = None
         self._mode = mode
         #self._update()
 
@@ -59,7 +59,8 @@ class Novel(object):
         return res
 
     def _update(self):
-        self._title = self._get_title()
+        if not self._title:
+            self._title = self._get_title()
         self._update_novel_contents()
 
     def _create_soup(self):
@@ -163,6 +164,7 @@ def novel_worker(message):
     global _source_config
     global _interval
     global NovelSaved
+    global novels
     now = time.time()
     if now < next_time:
         return
@@ -202,11 +204,46 @@ def novel_worker(message):
     with open('save/novel.json', "w") as f:
         f.write(json.dumps(NovelSaved, ensure_ascii = False))
 
+def command_parser(commands, argc):
+    """split commands in \s"""
+    argv = commands.split()
+    if len(argv) > argc:
+        return argv[:argc-1] + [' '.join(argv[argc-1:])]
+    return argv
 
-@respond_to(r'novel [\s]*[a-zA-Z0-9]+')
-def novel_command(message):
+@respond_to(r'novel [\s]*[a-zA-Z0-9][\s]*(.*)')
+def novel_command(message, rest):
     global next_time
-    next_time = 0
+    global novels
+
+    argv = command_parser(message.body.get('text', ""), 3)
+    command = ""
+    rest = ""
+
+    if len(argv) >= 2:
+        command = argv[1]
+    if len(argv) == 3:
+        rest = argv[2]
+
+    if command == "update":
+        if len(rest) == 0:
+            next_time = 0
+        else:
+            for novel in novels:
+                if novel.title == rest:
+                    novel.refresh()
+                    updated = novel.latest_contents
+                    if len(updated) != 0:
+                        for u in updated:
+                            message.send_to('werther0331', u'%s update : %s' % (rest, u))
+                            NovelSaved[novel.title] = u.split('-.-')[0][:-1]
+                    break
+
+    if command == "list":
+        novel_lists = ""
+        for novel in novels:
+            novel_lists += novel.title + "\n"
+        message.send_to('werther0331', u'%s' % (novel_lists))
 
 # def test_main():
 #     nurl = 'http://www.23wx.com/html/55/55035/'
@@ -222,9 +259,3 @@ def novel_command(message):
 
 # if __name__ == '__main__':
 #     test_main()
-
-
-
-
-
-
