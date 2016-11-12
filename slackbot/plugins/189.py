@@ -25,7 +25,7 @@ from slackbot.bot import plugin_init
 next_time = 0
 cached_number = list()
 
-request_url = "http://www.189.cn/sales/basedata/combonumber.do?systemType=1&salesProdId=00000000275F29724FBD182EE053AA1410AC7DA8&shopId=10036&comboDetailsId=&channelId=&pageindex=%d&pagesize=32&areacode=8330300&minpay=&prettypattern=&contnumber=&cacheId=&maxPage=78&numbertype=0&phoneNumMinExpense=&subPhoneNumMinExpense=&phoneNumPrestoreExpense=&mall_price=0.00&fourFlag=1&minExpenseCloud=&inflag=0&lastFlag=0&headNumber=%d&sortby=1&type=&numberLevel=&innumber=&maxpay=&_=1476067368536"
+request_url = "http://www.189.cn/sales/basedata/combonumber.do?systemType=1&salesProdId=00000000275F29724FBD182EE053AA1410AC7DA8&shopId=10036&comboDetailsId=&channelId=&pageindex=%d&pagesize=32&areacode=8310100&minpay=&prettypattern=&contnumber=&cacheId=&maxPage=78&numbertype=0&phoneNumMinExpense=&subPhoneNumMinExpense=&phoneNumPrestoreExpense=&mall_price=0.00&fourFlag=1&minExpenseCloud=&inflag=0&lastFlag=0&headNumber=%d&sortby=1&type=&numberLevel=&innumber=&maxpay=&_=1476067368536"
 
 _enable = False
 _debug = False
