@@ -245,6 +245,7 @@ def novel_command(message, rest):
                         for u in updated:
                             message.send_to('werther0331', u'%s update : %s' % (rest, u))
                             NovelSaved[novel.title] = u.split('-.-')[0][:-1]
+                            time.sleep(1)
                     break
 
     if command == "list":
