@@ -172,13 +172,18 @@ def novel_worker(message):
     if now < next_time:
         return
 
-    next_time = now + _interval
+    next_time = now + _interval + random.randint(-30*60, 30*60)
+
+    if time.strftime("%H") > 23 and time.strftime("%H ") < 6:
+        return
+
     if len(novels) == 0:
         for s in _source_config:
             url = s.get('url', "")
             mode = s.get('mode', "")
             novels.append(Novel(url, mode))
 
+    random.shuffle(novels)
     try:
         for novel in novels:
             novel.refresh()
@@ -191,15 +196,18 @@ def novel_worker(message):
                     for u in updated:
                         message.send_to('werther0331', u'%s updates : %s' % (title, u))
                         NovelSaved[title] = u.split('-.-')[0][:-1]
+                        time.sleep(1)
                 else:
                     # first inited
                     # print("%s updtes:  %s" % (title, updated[-2]))
                     # print("First fetch")
                     message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
                     NovelSaved[title] = updated[-1].split('-.-')[0][:-1]
+                break
             else:
                 # print("No updates")
                 pass
+
     except Exception as e:
         next_time = now + 5*60
         raise e
