@@ -77,26 +77,25 @@ class Novel(object):
         return BeautifulSoup(buff)
 
     def _get_title(self):
-        obj = self._soup.findAll('h3', limit=1)
-        return obj[0].string.split(u'作者')[0]
+        obj = self._soup.findAll('h1', limit=1)
+        return obj[0].string
 
     def _update_novel_contents(self, count = 0):
         global NovelSaved
         self._updated_contents = list()
         self._contents = list()
         update = False
-        obj = self._soup.findAll('table', cellspacing='1', cellpadding='0', limit=1)
-        nlist = obj[0].findAll('a')
+        #obj = self._soup.findAll('table', cellspacing='1', cellpadding='0', limit=1)
+        nlist = self._soup.findAll('dd')
 
         if NovelSaved.get(self.title, None) == None:
             update = True
 
-        for l in nlist[:-1]:
-
+        for l in nlist[9:-1]:
             if update:
-                self._updated_contents.append("%s -.- %s%s" % (l.string, self._url, l.get('href', "")))
+                self._updated_contents.append("%s -.- %s%s" % (l.a.string, self._url, os.path.basename(l.a.get('href', ""))))
 
-            if l.string == NovelSaved.get(self.title, ""):
+            if l.a.string == NovelSaved.get(self.title, ""):
                 update = True
 
             if count != 0 and len(self._updated_contents) < count:
@@ -267,10 +266,8 @@ def novel_command(message, rest):
 
 # def test_main():
 #     nurl = 'http://www.23wx.com/html/55/55035/'
-#     n = Novel(nurl)
+#     n = Novel(nurl, "roam")
 #     print("title %s" % (n.title))
-#     for i in n.latest_contents:
-#         print("%s" % (i))
 
 #     n.refresh()
 #     print("title %s" % (n.title))
