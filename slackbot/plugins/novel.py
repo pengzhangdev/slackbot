@@ -67,6 +67,7 @@ class Novel(object):
         buff = ""
         try:
             #f = urlopen(self._url);
+            print("url: %s" % (self._url))
             f = self._browser_base_urlopen(self._url)
             buff = f.read()
         except:
@@ -91,7 +92,7 @@ class Novel(object):
         if NovelSaved.get(self.title, None) == None:
             update = True
 
-        for l in nlist[9:-1]:
+        for l in nlist[12:]:
             if update:
                 self._updated_contents.append("%s -.- %s%s" % (l.a.string, self._url, os.path.basename(l.a.get('href', ""))))
 
@@ -105,7 +106,9 @@ class Novel(object):
                 return
 
         if update == False:
-            NovelSaved.pop(self.title)
+            #NovelSaved.pop(self.title)
+            self._updated_contents.append("%s -.- %s%s"
+                                          % (nlist[-1].a.string, self._url, os.path.basename(nlist[-1].a.get('href', ""))))
 
         #     if l.string not in self._cached_contents:
         #         self._updated_contents.append("%s -.- %s%s" % (l.string, self._url, l.get('href', "")))
