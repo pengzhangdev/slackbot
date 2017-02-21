@@ -21,6 +21,7 @@ import base64
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import plugin_init
+import ibotcloud
 
 class TulingBot(object):
     def __init__(self, key, debug, enable):
@@ -62,20 +63,55 @@ class TulingBot(object):
         else:
             return u"知道啦"
 
+
+class XiaoIBot(object):
+    def __init__(self):
+        self.key = "0vMVot7Ej5vJ"
+        self.secret = "xU7bqIhZlyXpavEcv6h8"
+        self.ask_sessions = dict()
+        self.signature_ask = None
+
+    def xiaoi_auto_reply(self, uid, msg):
+        user_id = base64.b64encode(uid)
+        session = None
+        if self.signature_ask == None:
+            self.signature_ask = ibotcloud.IBotSignature(app_key=self.key,
+                                                           app_sec=self.secret,
+                                                           uri="/ask.do",
+                                                           http_method="POST")
+        if self.ask_sessions.has_key(user_id):
+            session = self.ask_sessions.get(user_id)
+        else:
+            params_ask = ibotcloud.AskParams(platform="custom",
+                                                   user_id=user_id,
+                                                   url="http://nlp.xiaoi.com/ask.do",
+                                                   response_format="xml")
+            session = ibotcloud.AskSession(self.signature_ask, params_ask)
+            self.ask_sessions[user_id] = session
+        ret_ask = session.get_answer(msg)
+        if ret_ask.http_status != 200 or ret_ask.http_body == "I dont know":
+            return None
+        #print "xiaoi: {}".format(ret_ask.http_body)
+        return ret_ask.http_body
+
 tuling = None
+xiaoi = None
 
 @plugin_init
 def init_tuling(config):
     global tuling
+    global xiaoi
     enable = config.get('enable', False)
     debug = config.get('debug', False)
     api_key = config.get('api_key', '00')
     tuling = TulingBot(api_key, debug, enable)
+    xiaoi = XiaoIBot()
 
 @respond_to(r'^[^a-zA-Z0-9]')
 @listen_to(r'^[^a-zA-Z0-9]')
 def tulingbot(message):
     global tuling
+    global xiaoi
     if tuling.enable == False:
         return
 
@@ -91,5 +127,8 @@ def tulingbot(message):
         uid = channel
 
     msg = body['text']
-    re = tuling.tuling_auto_reply(uid, msg)
+    #print "handle chat"
+    re = xiaoi.xiaoi_auto_reply(uid, msg)
+    if re == None:
+        re = tulting.uling_auto_reply(uid, msg)
     message.reply(re)
