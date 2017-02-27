@@ -128,7 +128,7 @@ def tulingbot(message):
 
     msg = body['text']
     #print "handle chat"
-    re = xiaoi.xiaoi_auto_reply(uid, msg)
-    if re == None:
-        re = tulting.uling_auto_reply(uid, msg)
+    #re = xiaoi.xiaoi_auto_reply(uid, msg)
+    #if re == None:
+    re = tuling.tuling_auto_reply(uid, msg)
     message.reply(re)
