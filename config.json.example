@@ -65,6 +65,18 @@
                     }
                 ]
             }
+        },
+        {
+           "task": "free",
+           "config": {}
+        },
+        {
+            "task": "bluemix",
+            "config": {
+                "urls" : [
+                {"url": "http://169.44.118.209:9000"}
+                ]
+            }
         }
     ]
 }
