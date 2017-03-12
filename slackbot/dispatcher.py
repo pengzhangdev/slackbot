@@ -5,6 +5,7 @@ import logging
 import re
 import time
 import traceback
+import random
 from functools import wraps
 
 import six
@@ -158,7 +159,7 @@ class MessageDispatcher(object):
     def tick(self):
         while True:
             self._on_tick()
-            time.sleep(30)
+            time.sleep(30 + random.randint(0, 5 * 60))
 
     def _default_reply(self, msg):
         default_reply = settings.DEFAULT_REPLY
