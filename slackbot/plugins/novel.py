@@ -211,6 +211,7 @@ def novel_worker(message):
                 pass
 
     except Exception as e:
+        print("{}".format(e))
         next_time = now + 5*60
         raise e
 
