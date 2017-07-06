@@ -21,6 +21,7 @@ from BeautifulSoup import BeautifulSoup
 import urllib2
 import cookielib
 import random
+import sys
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
@@ -183,7 +184,13 @@ def novel_worker(message):
         for s in _source_config:
             url = s.get('url', "")
             mode = s.get('mode', "")
-            novels.append(Novel(url, mode))
+            try:
+                novels.append(Novel(url, mode))
+            except Exception as e:
+                print("{}".format(e))
+                next_time = now + 10 * 60;
+                t, v, tb = sys.exc_info()
+                raise t, v, tb
 
     random.shuffle(novels)
     try:
