@@ -188,6 +188,7 @@ def novel_worker(message):
                 novels.append(Novel(url, mode))
             except Exception as e:
                 print("{}".format(e))
+                novels = []
                 next_time = now + 10 * 60;
                 t, v, tb = sys.exc_info()
                 raise t, v, tb
