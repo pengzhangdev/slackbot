@@ -270,7 +270,7 @@ def novel_command(message, rest):
     if command == "list":
         novel_lists = ""
         for novel in novels:
-            novel_lists += novel.title + "\n"
+            novel_lists += novel.title + "\t" + NovelSaved[novel.title] + '\n'
         message.send_to('werther0331', u'%s' % (novel_lists))
 
     with open('save/novel.json', "w") as f:
