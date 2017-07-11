@@ -35,7 +35,7 @@ class Novel(object):
         self._soup = self._create_soup()
         self._contents = list()
         self._updated_contents = list()
-        self._title = None
+        self._title = self._get_title()
         self._mode = mode
         #self._update()
 
