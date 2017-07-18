@@ -16,7 +16,7 @@ from slackbot.utils import download_file, create_tmp_file
 #     elif url.startswith('/'):
 #         message.channel.upload_file(fname, url)
 
-FILEHUB_ROOT = "/home/werther/Game/"
+FILEHUB_ROOT = "/extdisks/sda1/fmroot/"
 
 def fm_upload(message, args):
     url = args
