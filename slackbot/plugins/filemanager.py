@@ -1,5 +1,6 @@
 import os
 from slackbot.bot import respond_to
+from slackbot.bot import listen_to
 from slackbot.utils import download_file, create_tmp_file
 
 
@@ -15,7 +16,7 @@ from slackbot.utils import download_file, create_tmp_file
 #     elif url.startswith('/'):
 #         message.channel.upload_file(fname, url)
 
-FILEHUB_ROOT = "/extdisks/sda1/fmroot/"
+FILEHUB_ROOT = "/home/werther/Game/"
 
 def fm_upload(message, args):
     url = args
@@ -25,8 +26,9 @@ def fm_upload(message, args):
         with create_tmp_file() as tmpf:
             download_file(url, tmpf)
             message.channel.upload_file(fname, tmpf, 'download from {}'.format(url))
-        else:
-            message.channel.upload_file(fname, os.path.join(FILEHUB_ROOT, url))
+    else:
+        #print("{} == {}".format(fname, os.path.join(FILEHUB_ROOT, url)))
+        message.channel.upload_file(fname, os.path.join(FILEHUB_ROOT, url))
 
 def fm_ls(message, args):
     argv = args.split()
@@ -35,7 +37,7 @@ def fm_ls(message, args):
         argv.append(FILEHUB_ROOT);
     for arg in argv:
         files = os.listdir(arg)
-        message.reply('{}'.format(' '.join(files[:])))
+        message.reply('{}'.format('\t'.join(files[:])))
 
 def fm_download(message, args):
     url = args
@@ -56,14 +58,14 @@ def parse_argument(contents):
         argv = argv + [' ']
     return argv
 
-@respond_to(r'fm [\s]*[a-zA-Z0-9]+ (.+)')
-@listen_to(r'fm [\s]*[a-zA-Z0-9]+ (.+)')
+@respond_to(r'fm [\s]*[a-zA-Z0-9]+ (.*)')
+@listen_to(r'fm [\s]*[a-zA-Z0-9]+ (.*)')
 def filemanager(message, rest):
     contents = message.body.get('text', "")
     _, command, args = parse_argument(contents)
     if command == "upload":
         fm_upload(message, args)
-    if command = "ls":
+    if command == "ls":
         fm_ls(message, args)
-    if command = "download":
+    if command == "download":
         fm_download(message, args)
