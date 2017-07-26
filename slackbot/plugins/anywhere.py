@@ -100,7 +100,7 @@ class SendAnywhere (object):
     def __download_file(self, url, fpath, filesize, callback=None):
         count = 0
         blocksize = 1024*64
-        r = requests.get(url, stream=True)
+        r = requests.get(url.encode('utf-8'), stream=True)
         with open(fpath, 'wb') as f:
             for chunk in r.iter_content(chunk_size=blocksize):
                 if chunk:
