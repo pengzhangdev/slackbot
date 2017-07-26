@@ -66,8 +66,8 @@ class SendAnywhere (object):
         poster.streaminghttp.register_openers()
         with open(filename, 'rb') as f:
             datagen, headers = poster.encode.multipart_encode({'file': f})
-            print("upload url: {}".format(url))
-            request = urllib2.Request(url.encode('utf-8'), datagen, headers)
+            print("upload url: {}".format(urllib.quote(url.encode('utf-8'))))
+            request = urllib2.Request(urllib.quote(url.encode('utf-8')), datagen, headers)
             resp = None
             try:
                 resp = urllib2.urlopen(request, timeout=timeout)
