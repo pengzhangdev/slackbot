@@ -124,6 +124,9 @@ class SendAnywhere (object):
             self.msg.reply("Finish downloading {} !".format(fp))
 
     def receive(self, name, key, msg=None):
+        if not self.inited:
+            self.__update()
+
         if 1 - self.download_progress > 0.01:
             print("Download in progress, please wait!!")
             return self.download_progress
