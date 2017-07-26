@@ -95,7 +95,7 @@ class SendAnywhere (object):
         res = self.opener.open(u)
         jdata = json.loads(res.read())
         dirname = os.path.dirname(fpath)
-        fp = jdata.get('name', fpath)
+        fp = jdata.get('name', fpath).encode('utf-8')
         #print('jdata {}'.format(jdata))
         if fp != fpath:
             fp = os.path.join(dirname, fp)
