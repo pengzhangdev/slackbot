@@ -152,7 +152,7 @@ if __name__ == '__main__':
 import zipfile
 def unzip(zippath, dest):
     zippath = os.path.join(DOWNLOAD_DIR, zippath)
-    fullunzipdirname = os.path.join(DOWNLOAD_DIR, zippath)
+    fullunzipdirname = os.path.join(DOWNLOAD_DIR, dest)
     zfile = zipfile.ZipFile(zippath, 'r')
     for eachfile in zfile.namelist():
         eachfilename = os.path.normpath(os.path.join(fullunzipdirname, eachfile))
