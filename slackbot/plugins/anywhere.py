@@ -46,11 +46,12 @@ class SendAnywhere (object):
         self.api_key = api_key
         self.download_progress = 1.0
         self.msg = msg
-        self.__update()
+        self.inited = False
 
     def __update(self):
         request_url = "https://send-anywhere.com/web/v1/device?api_key={}&profile_name=miroute".format(self.api_key)
         response = self.opener.open(request_url)
+        self.inited = True
 
     def __upload_file(self, url, filename, timeout):
         try:
@@ -60,7 +61,25 @@ class SendAnywhere (object):
             print "Timeout waiting for post"
         print("Send file done response {}".format(response))
 
+    def __upload_file_stream(self, url, filename, timeout):
+        import poster
+        poster.streaminghttp.register_openers()
+        with open(filename, 'rb') as f:
+            datagen, headers = poster.encode.multipart_encode({'file': f}, timeout=timeout)
+            request = urllib2.Request(url, datagen, headers)
+            resp = None
+            try:
+                resp = urllib2.urlopen(request)
+            except urllib2.HTTPError as error:
+                print(error)
+                print(error.fp.read())
+
+        print("Send file done response {}".format(resp))
+
     def send(self, filename):
+        if not self.inited:
+            self.__update()
+
         key_api_url = "{}/web/v1/key".format(SendAnywhere.API_ENDPOINTS)
 
         response = self.opener.open(key_api_url)
@@ -68,7 +87,7 @@ class SendAnywhere (object):
         print("share key: {}".format(jdata['key']))
         #print("{}".format(jdata))
         timeout = jdata['expires_time'] - jdata['created_time']
-        _thread.start_new_thread(self.__upload_file,
+        _thread.start_new_thread(self.__upload_file_stream,
                                  (jdata['weblink'], filename, timeout))
         #self.__upload_file(jdata['weblink'], filename, timeout)
         #time.sleep(timeout)
@@ -129,6 +148,26 @@ if __name__ == '__main__':
     sys.exit(1)
 
 
+
+import zipfile
+def unzip(zippath, dest):
+    zippath = os.path.join(DOWNLOAD_DIR, zippath)
+    fullunzipdirname = os.path.join(DOWNLOAD_DIR, zippath)
+    zfile = zipfile.ZipFile(zippath, 'r')
+    for eachfile in zfile.namelist():
+        eachfilename = os.path.normpath(os.path.join(fullunzipdirname, eachfile))
+        eachdirname = os.path.dirname(eachfilename)
+        if eachfile.endswith("/"):
+            # dir
+            os.makedirs(eachfilename)
+            continue
+        if not os.path.exists(eachdirname):
+            os.makedirs(eachdirname)
+        fd = open(eachfilename, 'wb')
+        fd.write(zfile.read(eachfile))
+        fd.close()
+
+
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 
@@ -162,13 +201,14 @@ def anywhere_command(message, rest):
         filepath = ' '.join(argv[2:])
         (timeout, key) = _anywhere.send(os.path.join(DOWNLOAD_DIR, filepath))
         message.reply('Shared file key {} expired in {} seconds'.format(key, timeout))
+        return
 
     if command == 'receive':
         # anywhere recv key filename
         if len(argv) < 4:
-            message.reply("Usage: anywhere recv [key] [filename]")
+            message.reply("Usage: anywhere receive [key] [filename]")
         if argv[2] == None or argv[3] == None:
-            message.reply("Usage: anywhere recv [key] [filename]")
+            message.reply("Usage: anywhere receive [key] [filename]")
         key = argv[2]
         filename = ' '.join(argv[3:])
         filename = os.path.join(DOWNLOAD_DIR, key + '_' + filename)
@@ -177,6 +217,7 @@ def anywhere_command(message, rest):
             message.reply("Start downloading {} to {}".format(key, filename))
         else:
             message.reply("Last download not done, progress {}".format(ret))
+        return
 
     if command == 'ls':
         print("command ls")
@@ -185,3 +226,27 @@ def anywhere_command(message, rest):
         for arg in argv[2:] :
             files = os.listdir(arg)
             message.reply('{}'.format('\n'.join(files[:])))
+        return
+
+    if command == 'unzip':
+        print("command unzip")
+        if len(argv) != 3 or len(argv) != 4:
+            message.reply("Usage: anywhere unzip [zipfile]")
+        zippath = argv[2]
+        if len(argv) == 4:
+            dest = argv[4]
+        else:
+            dest = os.path.dirname(zippath)
+        try:
+            unzip(zippath, dest)
+        except Exception as e:
+            message.reply("Unzip Failed")
+            return
+        message.reply("Unzip success")
+        return
+
+    message.reply("Usage: The ROOT is {}\n"
+                  "     anywhere ls\n"
+                  "     anywhere send [filepath]\n"
+                  "     anywhere receive [key] [filename]\n"
+                  "     anywhere unzip [zipfile]".format(DOWNLOAD_DIR))
