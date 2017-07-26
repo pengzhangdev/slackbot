@@ -230,8 +230,9 @@ def anywhere_command(message, rest):
 
     if command == 'unzip':
         print("command unzip")
-        if len(argv) != 3 or len(argv) != 4:
+        if len(argv) != 3 and len(argv) != 4:
             message.reply("Usage: anywhere unzip [zipfile]")
+            return
         zippath = argv[2]
         if len(argv) == 4:
             dest = argv[4]
@@ -240,7 +241,10 @@ def anywhere_command(message, rest):
         try:
             unzip(zippath, dest)
         except Exception as e:
+            print("{}".format(e))
             message.reply("Unzip Failed")
+            t, v, tb = sys.exc_info()
+            raise t, v, tb
             return
         message.reply("Unzip success")
         return
