@@ -65,11 +65,11 @@ class SendAnywhere (object):
         import poster
         poster.streaminghttp.register_openers()
         with open(filename, 'rb') as f:
-            datagen, headers = poster.encode.multipart_encode({'file': f}, timeout=timeout)
+            datagen, headers = poster.encode.multipart_encode({'file': f})
             request = urllib2.Request(url, datagen, headers)
             resp = None
             try:
-                resp = urllib2.urlopen(request)
+                resp = urllib2.urlopen(request, timeout=timeout)
             except urllib2.HTTPError as error:
                 print(error)
                 print(error.fp.read())
