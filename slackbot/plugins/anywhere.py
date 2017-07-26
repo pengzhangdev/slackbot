@@ -184,4 +184,4 @@ def anywhere_command(message, rest):
             argv = argv + ['{}'.format(DOWNLOAD_DIR)]
         for arg in argv[2:] :
             files = os.listdir(arg)
-            message.reply('{}'.format('\t'.join(files[:])))
+            message.reply('{}'.format('\n'.join(files[:])))
