@@ -18,6 +18,7 @@ import re
 import requests
 import json
 import base64
+from slackbot.bot import tick_task
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import plugin_init
@@ -128,7 +129,16 @@ def tulingbot(message):
 
     msg = body['text']
     #print "handle chat"
-    #re = xiaoi.xiaoi_auto_reply(uid, msg)
-    #if re == None:
-    re = tuling.tuling_auto_reply(uid, msg)
-    message.reply(re)
+    #rep = xiaoi.xiaoi_auto_reply(uid, msg)
+    #if rep == None:
+    rep = tuling.tuling_auto_reply(uid, msg)
+    message.reply(rep)
+
+GREETED = False
+
+@tick_task
+def tuling_worker(message):
+    global GREETED
+    if not GREETED:
+        GREETED = True
+        message.send_to('werther0331', "Hello Master, I am here!")
