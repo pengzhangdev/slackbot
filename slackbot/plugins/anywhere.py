@@ -25,7 +25,7 @@ from six.moves import _thread
 import time
 
 SHARED_DIR_ROOT='/extdisk/sda1/'
-DOWNLOAD_DIR='/extdisks/sda1/下载/'
+DOWNLOAD_DIR='/mnt/mmc/mi/'
 #DOWNLOAD_DIR='/home/werther/Music/'
 
 class SendAnywhere (object):
@@ -175,6 +175,8 @@ def unzip(zippath, dest):
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 
+import difflib
+
 _enable = False
 _anywhere = None
 @plugin_init
@@ -185,6 +187,7 @@ def init_anywhere(config):
     _enable = config.get('enable', False)
     _anywhere = SendAnywhere(api_key)
 
+@respond_to(r'aw (.*)')
 @respond_to(r'anywhere (.*)')
 def anywhere_command(message, rest):
     global _enable
@@ -193,9 +196,13 @@ def anywhere_command(message, rest):
         message.reply("SendAnywhere not enabled")
         return
 
+    command_lists = ['ls', 'receive', 'send', 'unzip']
     argv = ['anywhere'] + rest.split()
     print("{}".format(argv))
     command = argv[1]
+    c = difflib.get_close_matches(command, command_lists)
+    if c :
+        command = c[0]
     if command == 'send':
         # anywhere send [filepath]
         if len(argv) < 3:
@@ -253,8 +260,9 @@ def anywhere_command(message, rest):
         message.reply("Unzip success")
         return
 
-    message.reply("Usage: The ROOT is {}\n"
+    message.reply("Command {} not suport\n\n"
+                  "Usage: The ROOT is {}\n"
                   "     anywhere ls\n"
                   "     anywhere send [filepath]\n"
                   "     anywhere receive [key] [filename]\n"
-                  "     anywhere unzip [zipfile]".format(DOWNLOAD_DIR))
+                  "     anywhere unzip [zipfile]".format(command, DOWNLOAD_DIR))
