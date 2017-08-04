@@ -28,6 +28,8 @@ from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import plugin_init
 
+import commands
+
 class CommandBT(object):
     SORT_RELATIVE = 0
     SORT_DATE = 1
@@ -249,6 +251,9 @@ def command_bot(message, rest):
                 bot.update(r)
             bot.restart()
             os.exit(0)
+        else:
+            status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))
+            message.reply('command return {}\n{}'.format(status, outputinfo))
     except:
         tb = u'```\n{}\n```'.format(traceback.format_exc())
         message.reply('{}\n{}'.format(contents, tb))
