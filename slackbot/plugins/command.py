@@ -242,7 +242,12 @@ def command_bot(message, rest):
         return
 
     contents = message.body.get('text', "")
-    _, command, rest = command_parser(contents, 3)
+    #_, command, rest = command_parser(contents, 3)
+    argv = contents.split()
+    command = argv[1]
+    rest = ""
+    if len(argv) > 2:
+        rest = ' '.join(argv[2:])
     # print("{}".format(contents))
     try:
         if command == 'update':
