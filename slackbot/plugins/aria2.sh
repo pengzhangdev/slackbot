@@ -9,6 +9,8 @@ secret_token=$DIANA_SECRET_TOKEN
 username=""
 password=""
 
+HOME='/root/'
+
 while getopts 'hd:s:u:p:' opt ; do
 	case "$opt" in
 		h)
@@ -58,7 +60,7 @@ case "$1" in
 
 		[ ! -e "$diana_session" ] && touch "$diana_session"
 
-		args='--daemon --enable-rpc --continue'
+		args='--daemon --enable-rpc=true --continue --rpc-listen-all=true'
 		[ -n "$secret_token" ] && args="$args --rpc-secret $secret_token"
 		[ -n "$username" ] && args="$args --rpc-user $username"
 		[ -n "$password" ] && args="$args --rpc-passwd $password"
@@ -87,5 +89,6 @@ case "$1" in
 		else
 			rm -f "$daemon_pid"
 		fi
+        sleep 1
 		;;
 esac
