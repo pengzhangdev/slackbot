@@ -137,7 +137,7 @@ def get_files(gids):
 def apply_func_on_gids(fn, gids):
     ouput = ''
     for g in gids:
-        response = call_func(fnm [g])
+        response = call_func(fn, [g])
         if not response:
             print 'Failed on %s.' % g
             ouput += response + '\0'
