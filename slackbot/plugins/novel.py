@@ -95,7 +95,7 @@ class Novel(object):
 
         for l in nlist[12:]:
             if update:
-                self._updated_contents.append("%s -.- %s%s" % (l.a.string, self._url, os.path.basename(l.a.get('href', ""))))
+                self._updated_contents.append("%s -.- %s%s" % (l.a.string, self._url.replace('www', 'm'), os.path.basename(l.a.get('href', ""))))
 
             if l.a.string == NovelSaved.get(self.title, ""):
                 update = True
@@ -109,7 +109,7 @@ class Novel(object):
         if update == False:
             #NovelSaved.pop(self.title)
             self._updated_contents.append("%s -.- %s%s"
-                                          % (nlist[-1].a.string, self._url, os.path.basename(nlist[-1].a.get('href', ""))))
+                                          % (nlist[-1].a.string, self._url.replace('www', 'm'), os.path.basename(nlist[-1].a.get('href', ""))))
 
         #     if l.string not in self._cached_contents:
         #         self._updated_contents.append("%s -.- %s%s" % (l.string, self._url, l.get('href', "")))
