@@ -103,4 +103,4 @@ def aria2_command(message, rest):
     else:
         r = "Unknown command {}".format(command)
 
-    message.reply('{} excute reply {}\n'.format(command, r))
+    message.reply('{} excute reply \n{}'.format(command, r))
