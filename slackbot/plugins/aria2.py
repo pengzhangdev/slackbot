@@ -56,7 +56,7 @@ def aria2_command(message, rest):
         message.reply('aria {}'.format(' '.join(command_lists)))
     command = argv[1]
     try:
-        arguments = [2:]
+        arguments = argv[2:]
     except Exception as e:
         pass
     options = {}
