@@ -55,11 +55,8 @@ def aria2_command(message, rest):
     if len(argv) <= 1:
         message.reply('aria {}'.format(' '.join(command_lists)))
     command = argv[1]
-    arguments = []
     try:
-        for i in argv[2:]:
-            if i.startswith('<'):
-                arguments += [i[1:-1]]
+        arguments = [2:]
     except Exception as e:
         pass
     options = {}
@@ -106,4 +103,4 @@ def aria2_command(message, rest):
     else:
         r = "Unknown command {}".format(command)
 
-    message.reply('{} excute reply {}'.format(command, r))
+    message.reply('{} excute reply {}\n'.format(command, r))
