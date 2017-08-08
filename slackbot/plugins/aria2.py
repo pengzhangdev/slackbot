@@ -100,7 +100,7 @@ def aria2_command(message, rest):
     elif command == 'wake':
         r = aria2c.call_func('unpauseAll')
     elif command == 'purge':
-        r = aria2c.call_func('purgeDownloadResule')
+        r = aria2c.call_func('purgeDownloadResult')
     elif command == 'clean':
         r = aria2c.clean()
     else:
