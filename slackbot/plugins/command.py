@@ -255,7 +255,7 @@ def command_bot(message, rest):
                 print("update %s" % (r))
                 bot.update(r)
             #bot.restart()
-            os.exit(0)
+            sys.exit(0)
         else:
             message.reply('run command: {} {}'.format(command, rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))
