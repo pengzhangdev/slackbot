@@ -4,7 +4,7 @@ usage() {
 	printf '%s [-h|-d DOWNLOAD_DIR|-s SECRET_TOKEN|-u USERNAME|-p PASSWORD] start|stop\n' "${0##*/}"
 }
 
-download_dir=${DIANA_DOWNLOAD_DIR:-${XDG_DOWNLOAD_DIR:-${HOME}}}
+download_dir=/mnt/mmc/mi
 secret_token=$DIANA_SECRET_TOKEN
 username=""
 password=""
@@ -56,7 +56,7 @@ case "$1" in
 		fi
 
 		XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
-		diana_session=${XDG_DATA_HOME}/diana.session
+		diana_session=${XDG_DATA_HOME}/aria2.session
 
 		[ ! -e "$diana_session" ] && touch "$diana_session"
 
@@ -64,6 +64,11 @@ case "$1" in
 		[ -n "$secret_token" ] && args="$args --rpc-secret $secret_token"
 		[ -n "$username" ] && args="$args --rpc-user $username"
 		[ -n "$password" ] && args="$args --rpc-passwd $password"
+
+		upnpc -a `ifconfig eth0 | grep "inet addr" | cut -d : -f 2 | cut -d " " -f 1` 6899 6899 TCP
+		upnpc -a `ifconfig eth0 | grep "inet addr" | cut -d : -f 2 | cut -d " " -f 1` 6899 6899 UDP
+		upnpc -a `ifconfig eth0 | grep "inet addr" | cut -d : -f 2 | cut -d " " -f 1` 6889 6889 TCP
+		upnpc -a `ifconfig eth0 | grep "inet addr" | cut -d : -f 2 | cut -d " " -f 1` 6889 6889 UDP
 
 		aria2c $args --dir "$download_dir" --input-file "$diana_session" --save-session "$diana_session"
 
@@ -87,6 +92,11 @@ case "$1" in
 			printf '%s\n' 'Could not stop the daemon.' >&2
 			exit 1
 		else
+			upnpc -d 6889 TCP
+			upnpc -d 6889 UDP
+			upnpc -d 6899 TCP
+			upnpc -d 6899 UDP
+
 			rm -f "$daemon_pid"
 		fi
         sleep 1
