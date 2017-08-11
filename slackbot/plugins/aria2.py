@@ -70,6 +70,7 @@ def aria2_command(message, rest):
         command = c[0]
 
     r = ""
+    message.reply('aria {} {}'.format(command, arguments))
     if command == 'token':
         r = UUID
     elif command == 'add':
