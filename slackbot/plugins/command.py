@@ -249,13 +249,14 @@ def command_bot(message, rest):
     if len(argv) > 2:
         rest = ' '.join(argv[2:])
     # print("{}".format(contents))
+    just_exit = False
     try:
         if command == 'update':
             for r in rest.split():
                 print("update %s" % (r))
                 bot.update(r)
             #bot.restart()
-            sys.exit(0)
+            just_exit = True # the SystemExit exception will be catched
         else:
             message.reply('run command: {} {}'.format(command, rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))
@@ -263,3 +264,6 @@ def command_bot(message, rest):
     except:
         tb = u'```\n{}\n```'.format(traceback.format_exc())
         message.reply('{}\n{}'.format(contents, tb))
+
+    if just_exit:
+        sys.exit(1)
