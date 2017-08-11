@@ -254,9 +254,10 @@ def command_bot(message, rest):
             for r in rest.split():
                 print("update %s" % (r))
                 bot.update(r)
-            bot.restart()
+            #bot.restart()
             os.exit(0)
         else:
+            message.reply('run command: {} {}'.format(command, rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))
             message.reply('command return {}\n{}'.format(status, outputinfo))
     except:
