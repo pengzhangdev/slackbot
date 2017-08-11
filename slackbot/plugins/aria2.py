@@ -32,12 +32,12 @@ def init_aria2(config):
     DOWNLOAD_DIR = config.get('dir', DOWNLOAD_DIR)
     UUID = config.get('token', UUID)
     # aria2.sh stop
-    status, outputinfo = commands.getstatusoutput('slackbot/plugins/aria2.sh stop');
-    print 'stop aria2: {}'.format(outputinfo)
+    #status, outputinfo = commands.getstatusoutput('slackbot/plugins/aria2.sh stop');
+    #print 'stop aria2: {}'.format(outputinfo)
     # aria2.sh -d $DOWNLOAD_DIR -s $UUID stop
     # aria2.sh start
-    status, outputinfo = commands.getstatusoutput('slackbot/plugins/aria2.sh -d {} start'.format(DOWNLOAD_DIR))
-    print 'start aria2: {}'.format(outputinfo)
+    #status, outputinfo = commands.getstatusoutput('slackbot/plugins/aria2.sh -d {} start'.format(DOWNLOAD_DIR))
+    #print 'start aria2: {}'.format(outputinfo)
     # aria2.sh -d $DOWNLOAD_DIR -s $UUID start
     aria2c.SECRET_TOKEN = UUID
 

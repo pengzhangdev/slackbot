@@ -112,7 +112,7 @@ def get_files(gids):
                 output += '%s: \n' % (g)
             files = response['result']
             for f in files:
-                total_lenght = float(f['lenght'])
+                total_length = float(f['length'])
                 completed_length = float(f['completedLength'])
                 percent = 100
 
