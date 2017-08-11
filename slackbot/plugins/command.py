@@ -231,8 +231,8 @@ def command_bt(message, rest):
     for r in result:
         message.reply(r)
 
-@respond_to(r'bot [\s]*[a-zA-Z0-9]+ (.+)')
-@listen_to(r'bot [\s]*[a-zA-Z0-9]+ (.+)')
+@respond_to(r'bot (.*)')
+@listen_to(r'bot (.*)')
 def command_bot(message, rest):
     bot = Objs.get('bot', None)
     if bot == None:
