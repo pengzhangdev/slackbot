@@ -55,8 +55,13 @@ def aria2_command(message, rest):
     if len(argv) <= 1:
         message.reply('aria {}'.format(' '.join(command_lists)))
     command = argv[1]
+    arguments = []
     try:
-        arguments = argv[2:]
+        for arg in argv[2:] :
+            if arg.startswith('<'):
+                arguments += [arg[1:-1]]
+            else :
+                arguments += [arg]
     except Exception as e:
         pass
     options = {}
