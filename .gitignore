@@ -21,3 +21,5 @@ include/
 config.json
 share/
 pip-selfcheck.json
+config.json
+save/
