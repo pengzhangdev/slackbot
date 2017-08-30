@@ -30,6 +30,8 @@ from slackbot.bot import plugin_init
 
 import commands
 
+DOWNLOAD_DIR='/mnt/mmc/mi/'
+
 class CommandBT(object):
     SORT_RELATIVE = 0
     SORT_DATE = 1
@@ -257,6 +259,27 @@ def command_bot(message, rest):
                 bot.update(r)
             #bot.restart()
             just_exit = True # the SystemExit exception will be catched
+        elif command == 'ls':
+            for r in rest.split():
+                if not r.startswith('/'):
+                    r = os.path.join(DOWNLOAD_DIR, r)
+                message.reply('run command: {} {}'.format(command, rest))
+                status, outputinfo = commands.getstatusoutput('{} {}'.format(command, r))
+                message.reply('command return {}\n{}'.format(status, outputinfo))
+        elif command == 'video':
+            # mv target to directory Videos
+            t = os.path.join(DOWNLOAD_DIR, 'Videos')
+            for r in rest.split():
+                r = os.path.join(DOWNLOAD_DIR, r)
+                message.reply('run command mv {} {}'.format(r, t))
+                status, outputinfo = commands.getstatusoutput('mv {} {}'.format(r, t))
+                message.reply('command return {}\n{}'.format(status, outputinfo))
+        elif command == 'git':
+            # git command , likely git pull
+            message.reply('run command {} {}'.format(command, rest))
+            status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))
+            message.reply('command return {}\n{}'.format(status, outputinfo))
+            just_exit = True
         else:
             message.reply('run command: {} {}'.format(command, rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, rest))

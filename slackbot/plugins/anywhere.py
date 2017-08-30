@@ -235,8 +235,14 @@ def anywhere_command(message, rest):
         if len(argv) == 2:
             argv = argv + ['{}'.format(DOWNLOAD_DIR)]
         for arg in argv[2:] :
+            if not arg.startswith('/'):
+                arg = os.path.join(DOWNLOAD_DIR, arg)
             files = os.listdir(arg)
-            message.reply('{}'.format('\n'.join(files[:])))
+            out = ''
+            for f in files:
+                if not f.startswith('.'):
+                    out += f + '\n'
+            message.reply('{}'.format(out))
         return
 
     if command == 'unzip':
