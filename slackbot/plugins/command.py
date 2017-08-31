@@ -289,4 +289,4 @@ def command_bot(message, rest):
         message.reply('{}\n{}'.format(contents, tb))
 
     if just_exit:
-        sys.exit(1)
+        os._exit(1)
