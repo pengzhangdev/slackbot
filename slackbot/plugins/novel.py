@@ -22,12 +22,18 @@ import urllib2
 import cookielib
 import random
 import sys
+import hashlib
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 
 NovelSaved = dict()
+
+def md5sum(contents):
+    hash = hashlib.md5()
+    hash.update(contents)
+    return hash.hexdigest()
 
 class Novel(object):
     def __init__(self, url, mode):
@@ -94,10 +100,13 @@ class Novel(object):
             update = True
 
         for l in nlist[12:]:
+            book = "%s -.- %s%s" % (l.a.string, self._url.replace('www', 'm'), os.path.basename(l.a.get('href', "")))
             if update:
-                self._updated_contents.append("%s -.- %s%s" % (l.a.string, self._url.replace('www', 'm'), os.path.basename(l.a.get('href', ""))))
+                self._updated_contents.append(book)
 
             if l.a.string == NovelSaved.get(self.title, ""):
+                update = True
+            if l.a.string + md5sum(book) == NovelSaved.get(self.title, ""):
                 update = True
 
             if count != 0 and len(self._updated_contents) < count:
@@ -205,14 +214,14 @@ def novel_worker(message):
                     # print("Novel updated")
                     for u in updated:
                         message.send_to('werther0331', u'%s updates : %s' % (title, u))
-                        NovelSaved[title] = u.split('-.-')[0][:-1]
+                        NovelSaved[title] = u.split('-.-')[0][:-1] + md5sum(u)
                         time.sleep(1)
                 else:
                     # first inited
                     # print("%s updtes:  %s" % (title, updated[-2]))
                     # print("First fetch")
                     message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
-                    NovelSaved[title] = updated[-1].split('-.-')[0][:-1]
+                    NovelSaved[title] = updated[-1].split('-.-')[0][:-1] + md5sum(updated[-1])
                 break
             else:
                 # print("No updates")
