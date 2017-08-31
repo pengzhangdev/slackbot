@@ -272,7 +272,7 @@ def novel_command(message, rest):
                     if len(updated) != 0:
                         for u in updated:
                             message.send_to('werther0331', u'%s update : %s' % (rest, u))
-                            NovelSaved[novel.title] = u.split('-.-')[0][:-1]
+                            NovelSaved[novel.title] = u.split('-.-')[0][:-1] + md5sum(u)
                             time.sleep(1)
                     break
 
