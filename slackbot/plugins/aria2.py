@@ -16,6 +16,7 @@
 import uuid
 import difflib
 import commands
+import os
 
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
@@ -48,7 +49,7 @@ def aria2_command(message, rest):
     command_lists = ['token', 'add', 'remove', 'forcerm', 'info',
                      'pause', 'resume', 'list', 'errors', 'stats',
                      'paused', 'stopped', 'sleep', 'wake',
-                     'purge', 'clean']
+                     'purge', 'clean', 'download']
 
     argv = ['aria'] + rest.split()
     print('{}'.format(argv))
@@ -73,9 +74,13 @@ def aria2_command(message, rest):
     message.reply('aria {} {}'.format(command, arguments))
     if command == 'token':
         r = UUID
-    elif command == 'add':
+    elif command == 'download':
         print 'add_item {}'.format(arguments)
         r = aria2c.add_items(arguments, options)
+    elif command == 'add':
+        opt = dict(dir=os.path.join(DOWNLOAD_DIR, 'Videos'))
+        print 'add_item {} with options {}'.format(arguments, options)
+        r = aria2c.add_items(arguments, opt)
     elif command == 'remove':
         r = aria2c.remove_by_gid(arguments)
     elif command == 'forcerm':
