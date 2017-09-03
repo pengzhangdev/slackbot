@@ -261,6 +261,12 @@ def novel_command(message, rest):
     if len(argv) == 4:
         count = int(argv[3])
 
+    if command == 'start':
+        next_time = 0
+
+    if command == 'stop':
+        next_time = time.time() + 24 * 60 * 60
+
     if command == "update":
         if len(rest) == 0:
             next_time = 0
