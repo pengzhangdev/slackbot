@@ -45,7 +45,7 @@ class BYPY(object):
         if not os.path.exists(BYPY.DOWNLOAD_SESSIONS_DIR):
             os.mkdir(BYPY.DOWNLOAD_SESSIONS_DIR)
         if os.path.exists(BYPY.DOWNLOAD_SESSIONS):
-            self._sessions = json.load(BYPY.DOWNLOAD_SESSIONS)
+            self._sessions = json.load(open(BYPY.DOWNLOAD_SESSIONS, 'r'))
         self.__first_start()
 
     def __notify(self, msg):
@@ -61,21 +61,20 @@ class BYPY(object):
         for l in downlist:
             remotepath = l['remotepath']
             localpath = l['localpath']
-            self.__update_sessions(self, BYPY.DOWNLOAD_TAG, 'add', remotepath, localpath)
+            self.__update_sessions(BYPY.DOWNLOAD_TAG, 'add', remotepath, localpath)
             _thread.start_new_thread(self.__download_file, (remotepath, localpath))
 
         uploadlist = self._sessions.get(BYPY.UPLOAD_TAG, [])
         for l in uploadlist:
             remotepath = l['remotepath']
             localpath = l['localpath']
-            self.__update_sessions(self, BYPY.DOWNLOAD_TAG, 'add', remotepath, localpath)
+            self.__update_sessions(BYPY.DOWNLOAD_TAG, 'add', remotepath, localpath)
 
     def __download_file(self, remotepath, localpath):
         # localpath always is directory
         basename = os.path.basename(remotepath)
         tmpfile = os.path.join(localpath, basename + '.tmp')
-        p = subprocess.Popen('bypy --no-resume-download=False --config-dir=/root/.bypy/ download {} {}'.format(remotepath, tmpfile),
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        p = subprocess.Popen('python /usr/local/bin/bypy --config-dir=/root/.bypy/ download {} {}'.format(remotepath, tmpfile), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         while p.poll() == None:
             self.__notify(p.stdout.readline())
             time.sleep(1)
@@ -119,6 +118,7 @@ class BYPY(object):
             localdir = VIDEO_DIR
         else:
             localdir = DOWNLOAD_DIR
+        self.__update_sessions(BYPY.DOWNLOAD_TAG, 'add', remotepath, localdir)
         _thread.start_new_thread(self.__download_file, (remotepath, localdir))
         return 'bypy start downloading {} to {}'.format(remotepath, localdir)
 
