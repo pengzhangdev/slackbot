@@ -74,7 +74,7 @@ class BYPY(object):
         # localpath always is directory
         basename = os.path.basename(remotepath)
         tmpfile = os.path.join(localpath, basename + '.tmp')
-        p = subprocess.Popen('bypy --no-resume-download=False --config-dir=/root/.config/bypy/ download {} {}'.format(remotepath, tmpfile),
+        p = subprocess.Popen('bypy --no-resume-download=False --config-dir=/root/.bypy/ download {} {}'.format(remotepath, tmpfile),
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         while p.poll() == None:
             self.__notify(p.stdout.readline())
