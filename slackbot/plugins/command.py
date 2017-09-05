@@ -260,14 +260,14 @@ def command_bot(message, rest):
             #bot.restart()
             just_exit = True # the SystemExit exception will be catched
         elif command == 'ls':
-            command_rest = []
+            command_rest = ""
             for r in rest.split():
                 if r.startswith('-'):
-                    command_rest.append(r)
+                    command_rest = command_rest + " " + r
                     continue
                 if not r.startswith('/'):
                     r = os.path.join(DOWNLOAD_DIR, r)
-                    command_rest.append(r)
+                    command_rest = command_rest + " " + r
             message.reply('run command: {} {}'.format(command, command_rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, command_rest))
             message.reply('command return {}\n{}'.format(status, outputinfo))
