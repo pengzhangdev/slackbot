@@ -260,12 +260,17 @@ def command_bot(message, rest):
             #bot.restart()
             just_exit = True # the SystemExit exception will be catched
         elif command == 'ls':
+            command_rest = []
             for r in rest.split():
+                if r.startswith('-'):
+                    command_rest.append(r)
+                    continue
                 if not r.startswith('/'):
                     r = os.path.join(DOWNLOAD_DIR, r)
-                message.reply('run command: {} {}'.format(command, rest))
-                status, outputinfo = commands.getstatusoutput('{} {}'.format(command, r))
-                message.reply('command return {}\n{}'.format(status, outputinfo))
+                    command_rest.append(r)
+            message.reply('run command: {} {}'.format(command, command_rest))
+            status, outputinfo = commands.getstatusoutput('{} {}'.format(command, command_rest))
+            message.reply('command return {}\n{}'.format(status, outputinfo))
         elif command == 'video':
             # mv target to directory Videos
             t = os.path.join(DOWNLOAD_DIR, 'Videos')
