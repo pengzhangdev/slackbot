@@ -76,8 +76,10 @@ class BYPY(object):
         tmpfile = os.path.join(localpath, basename + '.tmp')
         p = subprocess.Popen('python /usr/local/bin/bypy --config-dir=/root/.bypy/ download {} {}'.format(remotepath, tmpfile), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         while p.poll() == None:
-            self.__notify(p.stdout.readline())
-            time.sleep(1)
+            msg = p.stdout.read()
+            if msg.find('0%') != -1:
+                self.__notify(msg)
+            time.sleep(2)
         self.__notify(p.stdout.read())
         retcode = p.returncode
         if retcode == 0:
