@@ -196,12 +196,16 @@ def novel_worker(message):
     if now < next_time:
         return
 
-    if now > _start_time or now < _end_time:
+    if now < _start_time or now > _end_time:
         if _start_time > now:
             next_time = _start_time
         else:
             next_time = _end_time + 10*60*60
-        message.reply('Suspend novel worker because time is {}, next wake time is {}',
+        message.send_to('werther0331', 'Suspend novel worker because time is {}, next wake time is {}'.format(
+                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)),
+                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time))))
+
+	print 'Suspend novel worker because time is {}, next wake time is {}'.format(
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)),
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time)))
         return
