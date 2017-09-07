@@ -267,7 +267,7 @@ def command_bot(message, rest):
                     continue
                 if not r.startswith('/'):
                     r = os.path.join(DOWNLOAD_DIR, r)
-                    command_rest = command_rest + " " + r
+                command_rest = command_rest + " " + r
             message.reply('run command: {} {}'.format(command, command_rest))
             status, outputinfo = commands.getstatusoutput('{} {}'.format(command, command_rest))
             message.reply('command return {}\n{}'.format(status, outputinfo))
