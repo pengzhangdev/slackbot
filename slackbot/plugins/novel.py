@@ -142,6 +142,10 @@ class Novel(object):
         return self._updated_contents
 
 
+date_string = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+default_start_time = date_string + " " + "08:00:00"
+default_end_time = date_string + " " + "22:00:00"
+
 next_time = time.time() + 30    # wait for 30 seconds to start
 novels = list()
 
@@ -150,6 +154,8 @@ _debug = False
 _source_url = list()
 _interval = 6*60*60
 _source_config = list()
+_start_time = default_start_time
+_end_time = default_end_time
 
 @plugin_init
 def init_novel(config):
@@ -159,8 +165,14 @@ def init_novel(config):
     global _interval
     global NovelSaved
     global _source_config
+    global _start_time
+    global _end_time
     _enable = config.get('enable', False)
     _debug = config.get('debug', False)
+    _start_time = config.get('start_time', default_start_time)
+    _start_time = time.mktime(time.strptime(_start_time, "%Y-%m-%d %H:%M:%S"))
+    _end_time = config.get('end_time', default_end_time)
+    _end_time = time.mktime(time.strptime(_end_time, "%Y-%m-%d %H:%M:%S"))
     sources = config.get('sources', [])
     for source in sources:
         en = source.get('enable', False)
@@ -182,6 +194,16 @@ def novel_worker(message):
     global novels
     now = time.time()
     if now < next_time:
+        return
+
+    if now > _start_time or now < _end_time:
+        if _start_time > now:
+            next_time = _start_time
+        else:
+            next_time = _end_time + 10*60*60
+        message.reply('Suspend novel worker because time is {}, next wake time is {}',
+                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)),
+                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time)))
         return
 
     next_time = now + _interval + random.randint(-30*60, 30*60)
