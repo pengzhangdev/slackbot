@@ -23,6 +23,7 @@ import cookielib
 import random
 import sys
 import hashlib
+import contextlib
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
@@ -75,13 +76,13 @@ class Novel(object):
         try:
             #f = urlopen(self._url);
             print("url: %s" % (self._url))
-            f = self._browser_base_urlopen(self._url)
-            buff = f.read()
+            with  contextlib.closing(self._browser_base_urlopen(self._url)) as f:
+                buff = f.read()
         except:
             time.sleep(1)
             #f = urlopen(self._url);
-            f = self._browser_base_urlopen(self._url)
-            buff = f.read()
+            with  contextlib.closing(self._browser_base_urlopen(self._url)) as f:
+                buff = f.read()
         return BeautifulSoup(buff)
 
     def _get_title(self):

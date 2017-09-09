@@ -23,6 +23,7 @@ import requests
 import json
 from six.moves import _thread
 import time
+import contextlib
 
 SHARED_DIR_ROOT='/extdisk/sda1/'
 DOWNLOAD_DIR='/mnt/mmc/mi/'
@@ -51,6 +52,7 @@ class SendAnywhere (object):
     def __update(self):
         request_url = "https://send-anywhere.com/web/v1/device?api_key={}&profile_name=miroute".format(self.api_key)
         response = self.opener.open(request_url)
+        response.close()
         self.inited = True
 
     def __upload_file(self, url, filename, timeout):
@@ -83,8 +85,8 @@ class SendAnywhere (object):
 
         key_api_url = "{}/web/v1/key".format(SendAnywhere.API_ENDPOINTS)
 
-        response = self.opener.open(key_api_url)
-        jdata = json.loads(response.read())
+        with contextlib.closing(self.opener.open(key_api_url)) as response:
+            jdata = json.loads(response.read())
         print("share key: {}".format(jdata['key']))
         #print("{}".format(jdata))
         timeout = jdata['expires_time'] - jdata['created_time']
@@ -112,8 +114,8 @@ class SendAnywhere (object):
         callback(filesize, filesize)
         u = url + '&mode=status&_={}'.format(int(time.time()))
         #print('status url {}'.format(u))
-        res = self.opener.open(u)
-        jdata = json.loads(res.read())
+        with contextlib.closing(self.opener.open(u)) as res:
+            jdata = json.loads(res.read())
         dirname = os.path.dirname(fpath)
         fp = jdata.get('name', fpath).encode('utf-8')
         #print('jdata {}'.format(jdata))
@@ -132,8 +134,8 @@ class SendAnywhere (object):
             return self.download_progress
         self.msg = msg
         key_api_url = "{}/web/v1/key/{}".format(SendAnywhere.API_ENDPOINTS, key)
-        response = self.opener.open(key_api_url)
-        jdata = json.loads(response.read())
+        with contextlib.closing(self.opener.open(key_api_url)) as response:
+            jdata = json.loads(response.read())
         #print("{}".format(jdata))
         _thread.start_new_thread(self.__download_file,
                                  (jdata['weblink'],

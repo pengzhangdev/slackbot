@@ -24,6 +24,7 @@ import BeautifulSoup
 import base64
 import json
 import random
+import contextlib
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 from slackbot.bot import plugin_init
@@ -110,8 +111,8 @@ class CommandBT(object):
         self._type = CommandBT.TYPE_ALL
         self._page = 1
         url = self._btdigg % (self._enc, self._page, self._sort, self._type)
-        f = self._browser_base_urlopen(url)
-        buf = f.read()
+        with  contextlib.closing(self._browser_base_urlopen(url)) as f:
+            buf = f.read()
         return self._create_list(buf, limits=1)
 
     def search_with_sort(self, sort_string):
@@ -126,8 +127,8 @@ class CommandBT(object):
         if sort_string == 'hot':
             self._sort = CommandBT.SORT_HOT
         url = self._btdigg % (self._enc, self._page, self._sort, self._type)
-        f = self._browser_base_urlopen(url)
-        buf = f.read()
+        with  contextlib.closing(self._browser_base_urlopen(url)) as f:
+            buf = f.read()
         return self._create_list(buf)
 
     def search_with_type(self, type_string):
@@ -139,8 +140,8 @@ class CommandBT(object):
             self._type = CommandBT.TYPE_BOOK
 
         url = self._btdigg % (self._enc, self._page, self._sort, self._type)
-        f = self._browser_base_urlopen(url)
-        buf = f.read()
+        with  contextlib.closing(self._browser_base_urlopen(url)) as f:
+            buf = f.read()
         return self._create_list(buf)
 
     @property
@@ -160,6 +161,8 @@ class CommandBot(object):
         f = self._browser_base_urlopen(url)
         tmpf = open(tmp_file, 'wb')
         tmpf.write(f.read())
+        f.close()
+        tmpf.close()
         os.rename(tmp_file, path)
 
     def _browser_base_urlopen(self, url):

@@ -22,6 +22,7 @@ import random
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
+import contextlib
 
 next_time = time.time()
 
@@ -65,5 +66,5 @@ def novel_worker(message):
     next_time = -1
     for url in bluemix_urls:
         print("access {}".format(url))
-        f = _browser_base_urlopen(url)
-        buff = f.read()
+        with  contextlib.closing(_browser_base_urlopen(url)) as f:
+            buff = f.read()
