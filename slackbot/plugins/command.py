@@ -192,6 +192,21 @@ class CommandBot(object):
     def enabled(self):
         return self._enable
 
+class LogBot(object):
+    DEFAULT_LINE_COUNT = 10
+    LOG_DIRECTORY = '/root/ok6410/log/'
+    def __init__(self, config):
+        self.__linecount = config.get('line', LogBot.DEFAULT_LINE_COUNT)
+    def getlog(self, name, linecount):
+        count = 0;
+        if linecount != 0:
+            count = linecount
+        else:
+            count = self.__linecount
+        with open(os.path.join(LOG_DIRECTORY, name), 'r') as f:
+            buff = f.readlines()
+            total = len(buff)
+            return ' '.join(buff[total - count:])
 
 Objs = dict()
 
@@ -212,6 +227,8 @@ def init_command(config):
             Objs['bt'] = CommandBT(c)
         if c.get('command', "") == 'bot':
             Objs['bot'] = CommandBot(c)
+        if c.get('command', "") == 'log':
+            Objs['log'] = LogBot(c)
 
 @respond_to(r'bt [\s]*[a-zA-Z0-9]+ (.+)')
 @listen_to(r'bt [\s]*[a-zA-Z0-9]+ (.+)')
@@ -298,3 +315,19 @@ def command_bot(message, rest):
 
     if just_exit:
         os._exit(1)
+
+
+@respond_to(r'log (.*)')
+@listen_to(r'log (.*)')
+def log_bot(message, rest):
+    logbot = Objs.get('log', None)
+    if logbot == None:
+        return
+    contents = message.body.get('text', "")
+    #_, command, rest = command_parser(contents, 3)
+    argv = contents.split()
+    count = 0
+    f = argv[1]
+    if len(argv) > 2:
+        count = int(argv[2])
+    message.reply(logbot.getlog(f, count))
