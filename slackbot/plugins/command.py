@@ -203,7 +203,7 @@ class LogBot(object):
             count = linecount
         else:
             count = self.__linecount
-        with open(os.path.join(LOG_DIRECTORY, name), 'r') as f:
+        with open(os.path.join(LogBot.LOG_DIRECTORY, name), 'r') as f:
             buff = f.readlines()
             total = len(buff)
             return ' '.join(buff[total - count:])
