@@ -56,7 +56,7 @@ class TTS(object):
         hash.update(contents)
         return hash.hexdigest()
 
-    def __mplayer(f):
+    def __mplayer(self, f):
         st, output = commands.getstatusoutput('mplayer -really-quiet -noconsolecontrols -volume 85 -speed 0.8 {}'.format(f))
         if st != 0:
             print('mplayer output:\n {}'.format(output))
