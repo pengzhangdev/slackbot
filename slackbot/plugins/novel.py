@@ -24,10 +24,13 @@ import random
 import sys
 import hashlib
 import contextlib
+import logging
 
 from slackbot.bot import tick_task
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
+
+logger = logging.getLogger(__name__)
 
 NovelSaved = dict()
 
@@ -75,7 +78,7 @@ class Novel(object):
         buff = ""
         try:
             #f = urlopen(self._url);
-            print("url: %s" % (self._url))
+            logger.info("url: %s", self._url)
             with  contextlib.closing(self._browser_base_urlopen(self._url)) as f:
                 buff = f.read()
         except:
@@ -206,9 +209,9 @@ def novel_worker(message):
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)),
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time))))
 
-	print 'Suspend novel worker because time is {}, next wake time is {}'.format(
+	logger.info('Suspend novel worker because time is {}, next wake time is {}'.format(
                       time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(now)),
-                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time)))
+                      time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(next_time))))
         return
 
     next_time = now + _interval + random.randint(-30*60, 30*60)
@@ -223,7 +226,7 @@ def novel_worker(message):
             try:
                 novels.append(Novel(url, mode))
             except Exception as e:
-                print("{}".format(e))
+                logger.info("{}".format(e))
                 novels = []
                 next_time = time.time() + 10 * 60;
                 t, v, tb = sys.exc_info()
@@ -255,7 +258,7 @@ def novel_worker(message):
                 pass
 
     except Exception as e:
-        print("{}".format(e))
+        logger.info("{}".format(e))
         next_time = time.time() + 5*60
         raise e
 
