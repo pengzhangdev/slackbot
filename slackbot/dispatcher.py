@@ -47,7 +47,10 @@ class MessageDispatcher(object):
 
         if category == 'tick':
             for func in self._plugins.tick_works:
-                func(Message(self._client, msg))
+                try:
+                    func(Message(self._client, msg))
+                except:
+                    pass
 
             return
 
