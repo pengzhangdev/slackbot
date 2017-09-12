@@ -51,7 +51,7 @@ class TTS(object):
     def __text2tts(self, message):
         return self.__ttsdriver.get_tts_audio(message, 'zh')
 
-    def __md5sum(contents):
+    def __md5sum(self, contents):
         hash = hashlib.md5()
         hash.update(contents)
         return hash.hexdigest()
