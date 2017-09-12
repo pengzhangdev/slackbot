@@ -22,6 +22,11 @@ import commands
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 
+try:
+    from pydub import AudioSegment
+except Exception as e:
+    print  'Missing module pydub, please install it'
+
 class TTS(object):
     def __init__(self, config, method):
         self.__ttsdriver = None
@@ -34,6 +39,15 @@ class TTS(object):
                                                  config.get('person', 3))
 
 
+    def __insert_silent(self, media_file, ftype):
+        try:
+            silent = AudioSegment.silent(duration=1000)
+            sound1 = AudioSegment.from_file(media_file, ftype)
+            combined = silent + sound1
+            combined.export(media_file, format=ftype)
+        except Exception as e:
+            print("{}".format(e))
+
     def __text2tts(self, message):
         return self.__ttsdriver.get_tts_audio(message, 'zh')
 
@@ -43,7 +57,9 @@ class TTS(object):
         return hash.hexdigest()
 
     def __mplayer(f):
-        st, output = commands.getstatusoutput('mplayer -really-quiet -noconsolecontrols -volume 82 {}'.format(f))
+        st, output = commands.getstatusoutput('mplayer -really-quiet -noconsolecontrols -volume 85 -speed 0.8 {}'.format(f))
+        if st != 0:
+            print('mplayer output:\n {}'.format(output))
 
     def text2play(self, message):
         t, d = self.__text2tts(message)
