@@ -43,7 +43,7 @@ class TTS(object):
         try:
             silent = AudioSegment.silent(duration=1000)
             sound1 = AudioSegment.from_file(media_file, ftype)
-            combined = silent + sound1
+            combined = silent + sound1 + silent
             combined.export(media_file, format=ftype)
         except Exception as e:
             print("{}".format(e))
