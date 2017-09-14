@@ -18,6 +18,12 @@ import requests
 import logging
 import json
 import logging
+import os
+
+try:
+    from pydub import AudioSegment
+except Exception as e:
+    print  'Missing module pydub, please install it'
 
 _Log=logging.getLogger(__name__)
 
@@ -54,7 +60,20 @@ class BaiduTTS():
             return None
         return tokenJson['access_token']
 
-    def get_tts_audio(self, message, language, options=None):
+    def __insert_silent(self, media_file, ftype):
+        try:
+            silent = AudioSegment.silent(duration=1000)
+            sound1 = AudioSegment.from_file(media_file, ftype)
+            combined = silent + sound1 + silent
+            combined.export(media_file, format=ftype)
+        except Exception as e:
+            print("insert_silent failed file {} error {}".format(media_file, e))
+
+    def __save_file(self, data, _tmp_file = '/tmp/test.mp3'):
+        with open(_tmp_file, 'w') as f:
+            f.write(data)
+
+    def get_tts_audio(self, message, filename, language, options=None):
         if self.__token == None:
             self.__token = self.getToken()
 
@@ -83,10 +102,13 @@ class BaiduTTS():
             return
 
         data = resp.content
-        return ('mp3',data)
+        fname = os.path.join('/tmp/' + filename + '.' + 'mp3')
+        self.__save_file(data, fname)
+        self.__insert_silent(fname, 'mp3')
+        return ('mp3', fname)
 
 if __name__ == '__main__':
-    tts = BaiduTTS('xxxxxxxxxxxxxxxx', 'xxxxxxxxxxxxx', 5, 9, 9, 3)
+    tts = BaiduTTS('XXXXXXXXXXXXXXXXXXX', 'xxxxxxxxxxxxx', 5, 9, 9, 3)
     def md5sum(contents):
         import hashlib
         hash = hashlib.md5()
@@ -94,16 +116,13 @@ if __name__ == '__main__':
         return hash.hexdigest()
 
     import sys
-    t,d = tts.get_tts_audio(sys.argv[1], 'zh');
-    basename = md5sum(d)
-    basename = os.path.join('/tmp/' + basename + '.' + t)
-    with open(basename, 'w') as f:
-        f.write(d)
+    basename = md5sum(sys.argv[1])
+    t, f = tts.get_tts_audio(sys.argv[1], basename, 'zh');
 
     def mplayer(f):
         import commands
         st, output = commands.getstatusoutput('mplayer -really-quiet -noconsolecontrols -volume 82 {}'.format(f))
 
-    mplayer(basename)
+    mplayer(f)
     import os
-    os.remove(basename)
+    os.remove(f)
