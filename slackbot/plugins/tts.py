@@ -15,7 +15,6 @@
 #
 import os
 import sys
-import baidutts
 import hashlib
 import commands
 
@@ -26,12 +25,20 @@ class TTS(object):
     def __init__(self, config, method):
         self.__ttsdriver = None
         if method == 'baidu':
+            import baidutts
             self.__ttsdriver = baidutts.BaiduTTS(config.get('apikey', ""),
                                                  config.get('secretkey', ""),
                                                  config.get('speed', 5),
                                                  config.get('pitch', 9),
                                                  config.get('volume', 9),
                                                  config.get('person', 3))
+        if method == 'iflytek':
+            import iflytek
+            self.__ttsdriver = iflytek.iflytekTTS(config.get('appid', '59b4d5d4'),
+                                                  config.get('voice_name', 'xiaowanzi'),
+                                                  config.get('speed', 50),
+                                                  config.get('volume', 50),
+                                                  config.get('pitch', 50))
 
 
     def __text2tts(self, message):
