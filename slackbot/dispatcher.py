@@ -212,7 +212,7 @@ class Message(object):
         self._body = body
         self._plugins = PluginsManager()
 
-    def _get_user_id(self):
+    def get_user_id(self):
         if 'user' in self._body:
             return self._body['user']
 
@@ -220,7 +220,7 @@ class Message(object):
 
     @unicode_compact
     def _gen_at_message(self, text):
-        text = u'<@{}>: {}'.format(self._get_user_id(), text)
+        text = u'<@{}>: {}'.format(self.get_user_id(), text)
         return text
 
     @unicode_compact

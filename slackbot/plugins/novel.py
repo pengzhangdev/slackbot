@@ -278,6 +278,9 @@ def novel_command(message, rest):
     global novels
     global NovelSaved
 
+    if message.get_user_id() != 'werther0331':
+        message.reply('Permission deny, please contact to werther0331')
+
     argv = command_parser(message.body.get('text', ""), 4)
     command = ""
     rest = ""
