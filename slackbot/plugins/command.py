@@ -263,8 +263,9 @@ def command_bot(message, rest):
     if bot.enabled == False:
         return
 
-    if message.get_user_id() != 'werther0331':
-        message.reply('Permission deny, please contact to werther0331')
+    if message.get_user_id() != 'U213YS4RE':
+        message.reply('Permission deny for {}, please contact to werther0331'.format(message.get_user_id()))
+        return
 
     contents = message.body.get('text', "")
     #_, command, rest = command_parser(contents, 3)
