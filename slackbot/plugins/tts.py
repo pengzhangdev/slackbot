@@ -76,4 +76,5 @@ def init_tts(config):
 def tts_command(message, rest):
     global tts_obj
 
+    message.reply("Starting to tts {}".format(rest))
     tts_obj.text2play(rest)
