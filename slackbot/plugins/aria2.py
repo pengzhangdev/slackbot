@@ -20,6 +20,7 @@ import os
 
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
+from slackbot.bot import listen_to
 
 import aria2c
 
@@ -43,6 +44,7 @@ def init_aria2(config):
     aria2c.SECRET_TOKEN = UUID
 
 @respond_to(r'aria (.*)')
+@listen_to(r'aria (.*)')
 def aria2_command(message, rest):
     global UUID
 

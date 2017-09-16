@@ -20,6 +20,7 @@ import commands
 
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
+from slackbot.bot import listen_to
 
 class TTS(object):
     def __init__(self, config, method):
@@ -71,6 +72,7 @@ def init_tts(config):
         tts_obj = TTS(config, driver)
 
 @respond_to(r'tts (.*)')
+@listen_to(r'tts (.*)')
 def tts_command(message, rest):
     global tts_obj
 
