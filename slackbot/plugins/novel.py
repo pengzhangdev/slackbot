@@ -228,7 +228,7 @@ def novel_worker(message):
             except Exception as e:
                 logger.info("{}".format(e))
                 novels = []
-                next_time = time.time() + 10 * 60;
+                next_time = time.time() + 5 * 60;
                 t, v, tb = sys.exc_info()
                 raise t, v, tb
 
@@ -259,8 +259,9 @@ def novel_worker(message):
 
     except Exception as e:
         logger.info("{}".format(e))
-        next_time = time.time() + 5*60
-        raise e
+        next_time = time.time() + 3*60
+        t, v, tb = sys.exc_info()
+        raise t, v, tb
 
     with open('save/novel.json', "w") as f:
         f.write(json.dumps(NovelSaved, ensure_ascii = False))

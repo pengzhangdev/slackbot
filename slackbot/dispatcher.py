@@ -50,7 +50,8 @@ class MessageDispatcher(object):
                 try:
                     func(Message(self._client, msg))
                 except:
-                    pass
+                    logger.exception(
+                        'failed to call tick function "%s"', func.__name__)
 
             return
 
