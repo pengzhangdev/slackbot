@@ -170,7 +170,7 @@ class MessageDispatcher(object):
     def tick(self):
         while True:
             self._on_tick()
-            time.sleep(30 + random.randint(0, 30))
+            time.sleep(5)
 
     def _default_reply(self, msg):
         default_reply = settings.DEFAULT_REPLY

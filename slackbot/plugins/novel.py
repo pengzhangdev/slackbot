@@ -150,7 +150,7 @@ date_string = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 default_start_time = date_string + " " + "08:00:00"
 default_end_time = date_string + " " + "22:00:00"
 
-next_time = time.time() + 30    # wait for 30 seconds to start
+next_time = time.time()    # wait for 30 seconds to start
 novels = list()
 
 _enable = False
