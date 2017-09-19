@@ -45,9 +45,15 @@ class iflytekTTS():
         self.__iflytek_init()
 
     def __save_file(self, raw_data, _tmpFile = '/tmp/test.wav'):
-        with contextlib.closing(wave.open(_tmpFile , 'w')) as f:
+        if os.path.exists(_tmpFile) :
+            return
+
+        tmpFile = _tmpFile + '.tmp'
+        with contextlib.closing(wave.open(tmpFile , 'w')) as f:
             f.setparams((1, 2, 16000, 262720, 'NONE', 'not compressed'))
             f.writeframesraw(raw_data)
+
+        os.rename(tmpFile, _tmpFile)
 
     def __iflytek_init(self):
         MSPLogin = self.__cur.MSPLogin
@@ -109,7 +115,7 @@ class iflytekTTS():
                 self.__save_file(f.getvalue(), fname)
                 break
 
-            time.sleep(1)
+            time.sleep(0.5)
 
         logging.info('合成完成！')
         ret = QTTSSessionEnd(sessionID, "Normal")

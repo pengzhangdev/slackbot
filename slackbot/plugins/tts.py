@@ -13,53 +13,12 @@
 # Change Log:
 #
 #
-import os
-import sys
-import hashlib
-import commands
-
 from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 
-class TTS(object):
-    def __init__(self, config, method):
-        self.__ttsdriver = None
-        if method == 'baidu':
-            import baidutts
-            self.__ttsdriver = baidutts.BaiduTTS(config.get('apikey', ""),
-                                                 config.get('secretkey', ""),
-                                                 config.get('speed', 5),
-                                                 config.get('pitch', 9),
-                                                 config.get('volume', 9),
-                                                 config.get('person', 3))
-        if method == 'iflytek':
-            import iflytek
-            self.__ttsdriver = iflytek.iflytekTTS(config.get('appid', '59b4d5d4'),
-                                                  config.get('voice_name', 'xiaowanzi'),
-                                                  config.get('speed', 50),
-                                                  config.get('volume', 50),
-                                                  config.get('pitch', 50))
+from tts.ttsdriver import TTS
 
-
-    def __text2tts(self, message):
-        filename = self.__md5sum(message)
-        return self.__ttsdriver.get_tts_audio(message, filename, 'zh')
-
-    def __md5sum(self, contents):
-        hash = hashlib.md5()
-        hash.update(contents)
-        return hash.hexdigest()
-
-    def __mplayer(self, f):
-        st, output = commands.getstatusoutput('mplayer -really-quiet -noconsolecontrols -volume 90 -speed 0.9 {}'.format(f))
-        if st != 0:
-            print('mplayer output:\n {}'.format(output))
-
-    def text2play(self, message):
-        t, f = self.__text2tts(message)
-        self.__mplayer(f)
-        os.remove(f)
 
 tts_obj = None
 
