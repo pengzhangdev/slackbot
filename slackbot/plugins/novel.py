@@ -145,6 +145,10 @@ class Novel(object):
     def latest_contents(self):
         return self._updated_contents
 
+    @property
+    def url(self):
+        return self._url
+
 
 date_string = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 default_start_time = date_string + " " + "08:00:00"
@@ -219,20 +223,28 @@ def novel_worker(message):
     if time.strftime("%H") > 23 and time.strftime("%H ") < 6:
         return
 
-    if len(novels) == 0:
+    if len(novels) < len(_source_config):
         for s in _source_config:
             url = s.get('url', "")
             mode = s.get('mode', "")
+            skip = False
+            for n in novels:
+                if url == n.url:
+                    skip = True
+                    break
+            if skip:
+                continue
+
             try:
                 novels.append(Novel(url, mode))
             except Exception as e:
-                logger.info("{}".format(e))
-                novels = []
+                logger.exception("{}".format(e))
                 next_time = time.time() + 5 * 60;
-                t, v, tb = sys.exc_info()
-                raise t, v, tb
+                #t, v, tb = sys.exc_info()
+                #raise t, v, tb
 
     random.shuffle(novels)
+    force_refresh = True
     try:
         for novel in novels:
             novel.refresh()
@@ -252,6 +264,7 @@ def novel_worker(message):
                     # print("First fetch")
                     message.send_to('werther0331', u'%s updates : %s' % (title, updated[-1]))
                     NovelSaved[title] = updated[-1].split('-.-')[0][:-1] + md5sum(updated[-1])
+                force_refresh = False
                 break
             else:
                 # print("No updates")
@@ -262,6 +275,9 @@ def novel_worker(message):
         next_time = time.time() + 3*60
         t, v, tb = sys.exc_info()
         raise t, v, tb
+
+    if force_refresh:
+        next_time = time.time() + 3 * 60
 
     with open('save/novel.json', "w") as f:
         f.write(json.dumps(NovelSaved, ensure_ascii = False))
