@@ -73,8 +73,8 @@ class dysfz(Singleton):
             _LOGGER.debug('{}'.format(li.p.span.string))
 
             today = datetime.datetime.now().strftime('%Y-%m-%d')
-            if today != li.p.span.string:
-                continue
+            #if today != li.p.span.string:
+            #    continue
 
             movie_name = '{}({})'.format(li.h2.a.string.encode('utf-8'), dbscore)
             movie_url = li.h2.a['href']
