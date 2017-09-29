@@ -15,7 +15,6 @@
 #
 
 import utils.browser as b
-from utils.singleton import Singleton
 
 from BeautifulSoup import BeautifulSoup
 
@@ -30,7 +29,7 @@ _LOGGER.setLevel(logging.INFO)
 
 
 
-class dysfz(Singleton):
+class dysfz(object):
     """"""
     IGNORE_LIST='save/dysfz_ignore.txt'
     def __init__(self):

@@ -14,18 +14,35 @@
 #
 
 from dysfz import dysfz
-from utils.singleton import Singleton
 
 import time
+import threading
 
-class MovieWoker(Singleton):
+Lock = threading.Lock()
+
+class MovieWoker(object):
     """"""
+    _instance = None
+    _inited = False
     def __init__(self):
-
+        if MovieWoker._inited:
+            return
+        print("Init singleton MovieWoker")
+        MovieWoker._inited = True
         self._interval = 6*60*60
         self._enable = False
         self._next_wake_time = time.time()
         self._dysfz = dysfz()
+
+    def __new__(cls, *args, **kw):
+        if not cls._instance:
+            try:
+                Lock.acquire()
+                if not cls._instance:
+                    cls._instance = super(MovieWoker, cls).__new__(cls, *args, **kw)
+            finally:
+                Lock.release()
+        return cls._instance
 
     def update_config(self, config):
         # read from config
@@ -34,6 +51,7 @@ class MovieWoker(Singleton):
 
     def on_tick(self, message):
         if not self._enable:
+            print("movie is not enabled");
             return
 
         now = time.time()

@@ -16,9 +16,12 @@ import os
 import sys
 import hashlib
 import commands
+import threading
 
 from six.moves import _thread, range, queue
 import six
+
+Lock = threading.Lock()
 
 class WorkerPool(object):
     def __init__(self, func, nworker=1):
@@ -38,15 +41,14 @@ class WorkerPool(object):
             msg = self.queue.get()
             self.func(msg)
 
-class Singleton(object):
-        _instance = None
-        def __new__(cls, *args, **kw):
-            if not cls._instance:
-                cls._instance = super(Singleton, cls).__new__(cls, *args, **kw)
-            return cls._instance
-
-class TTS(Singleton):
+class TTS(object):
+    _instance = None
+    _inited = False
     def __init__(self, config, method):
+        if TTS._inited:
+            return
+        print("Init singleton TTS")
+        TTS._inited = True
         self.__ttsdriver = None
         self.__pool = WorkerPool(self.__mplayer)
         self.__pool.start()
@@ -69,6 +71,15 @@ class TTS(Singleton):
                                                   config.get('volume', 50),
                                                   config.get('pitch', 50))
 
+    def __new__(cls, *args, **kw):
+        if not cls._instance:
+            try:
+                Lock.acquire()
+                if not cls._instance:
+                    cls._instance = super(TTS, cls).__new__(cls, *args, **kw)
+            finally:
+                Lock.release()
+        return cls._instance
 
     def __text2tts(self, message):
         filename = self.__md5sum(message)
