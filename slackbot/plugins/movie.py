@@ -64,6 +64,7 @@ class MovieWoker(object):
         items = self._dysfz.refresh()
         for (name, url, db) in items:
             message.send_to('werther0331', '{}\n{}\n{}'.format(name, url, db))
+            time.sleep(1)
 
     def stop(self):
         self._enable = False
