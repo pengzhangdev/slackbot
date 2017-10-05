@@ -29,7 +29,7 @@ class MovieWoker(object):
             return
         print("Init singleton MovieWoker")
         MovieWoker._inited = True
-        self._interval = 6*60*60
+        self._interval = 3*60*60
         self._enable = False
         self._next_wake_time = time.time()
         self._dysfz = dysfz()
@@ -46,7 +46,7 @@ class MovieWoker(object):
 
     def update_config(self, config):
         # read from config
-        self._interval = config.get('interval', 6*60*60)
+        self._interval = config.get('interval', 3*60*60)
         self._enable = config.get('enable', True)
 
     def on_tick(self, message):
