@@ -101,4 +101,5 @@ class TTS(object):
 
     def text2play(self, message):
         t, f = self.__text2tts(message)
-        self.__add_to_mplayer(f)
+        #self.__add_to_mplayer(f)
+        return f

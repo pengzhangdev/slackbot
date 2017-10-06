@@ -18,22 +18,29 @@ from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 
 from component.ttsdriver import TTS
+from component.player import Player
 
 
 tts_obj = None
+player_obj = None
 
 @plugin_init
 def init_tts(config):
     global tts_obj
+    global player_obj
     enable = config.get('enable', False)
     driver = config.get('driver', 'baidu')
     if enable:
         tts_obj = TTS(config, driver)
+        player_obj = Player()
+        player_obj.update_config(driver='mplayer')
 
 @respond_to(r'tts (.*)')
 @listen_to(r'tts (.*)')
 def tts_command(message, rest):
     global tts_obj
+    global player_obj
 
     message.reply("Starting to tts {}".format(rest))
-    tts_obj.text2play(rest)
+    f = tts_obj.text2play(rest)
+    player_obj.play(f)
