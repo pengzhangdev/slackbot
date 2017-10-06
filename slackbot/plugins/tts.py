@@ -17,7 +17,7 @@ from slackbot.bot import plugin_init
 from slackbot.bot import respond_to
 from slackbot.bot import listen_to
 
-from ttsdriver import TTS
+from component.ttsdriver import TTS
 
 
 tts_obj = None

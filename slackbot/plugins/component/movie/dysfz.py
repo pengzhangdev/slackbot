@@ -14,7 +14,7 @@
 #
 #
 
-import utils.browser as b
+from ...utils import browser as b
 
 from BeautifulSoup import BeautifulSoup
 

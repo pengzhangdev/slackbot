@@ -13,7 +13,7 @@
 #
 #
 
-from dysfz import dysfz
+from component.movie.dysfz import dysfz
 
 import time
 import threading
