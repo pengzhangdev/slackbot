@@ -14,7 +14,12 @@
 #
 #
 
-from ...utils import browser as b
+if __name__ == '__main__' and __package__ is None:
+    from os import sys, path
+    sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+    import utils.browser as b
+else:
+    from ...utils import browser as b
 
 from BeautifulSoup import BeautifulSoup
 
@@ -23,6 +28,7 @@ import time
 import logging
 import sys
 import os
+import re
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.INFO)
@@ -76,7 +82,8 @@ class dysfz(object):
             # if not db:
             #     continue
             # dbscore = float(db.b.string)
-            # today = datetime.datetime.now().strftime('%Y-%m-%d')
+            year = datetime.datetime.now().strftime('%Y')
+            year = int(year)
             #if today != li.p.span.string:
             #    continue
             _LOGGER.debug('LI {}'.format(li))
@@ -88,6 +95,11 @@ class dysfz(object):
             db_url = li.p.find(attrs={'rel':'nofollow', 'target':'_blank'})['href']
             dbscore = self._get_dbsccore(db_url)
             movie_name = '{}({})'.format(li.h2.a.string.encode('utf-8'), dbscore)
+            all_year = re.findall(r'【\d+】', movie_name)
+            movie_year = year
+            if len(all_year) > 0:
+                movie_year = int(all_year[0][3:-3])
+                _LOGGER.debug('movie_year: {}'.format(movie_year))
 
             if db_url in self.ignore_list:
                 continue
@@ -95,6 +107,8 @@ class dysfz(object):
             if dbscore <= 7:
                 continue
 
+            if movie_year < year - 1:
+                continue
 
             _LOGGER.debug('dbscore: {}'.format(dbscore))
             _LOGGER.debug('{}'.format(li.p.span.string))
