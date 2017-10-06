@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Support for an interface to work with a remote instance of Home Assistant.
 
@@ -17,6 +19,7 @@ import re
 from types import DictProxyType
 import requests
 import pytz
+import dateutil.parser as DateParser
 
 #_LOGGER = logging.getLogger(__name__)
 
@@ -36,7 +39,7 @@ CONTENT_TYPE_JSON = 'application/json'
 ENTITY_ID_PATTERN = re.compile(r"^(\w+)\.(\w+)$")
 
 UTC = DEFAULT_TIME_ZONE = pytz.utc
-
+CST = pytz.timezone('Asia/Shanghai')
 
 def valid_entity_id(entity_id):
     """Test if an entity ID is a valid format."""
@@ -45,9 +48,13 @@ def valid_entity_id(entity_id):
 def as_local(dattim):
     """Convert a UTC datetime object to local time zone."""
     if dattim.tzinfo == DEFAULT_TIME_ZONE:
-            return dattim
+        return dattim
     elif dattim.tzinfo is None:
-            dattim = UTC.localize(dattim)
+        dattim = UTC.localize(dattim)
+        return dattim
+    else:
+        dattim = dattim.astimezone(CST)
+    return dattim
 
 def utcnow():
     """Get now in UTC time."""
@@ -98,9 +105,12 @@ def repr_helper(inp):
                 repr_helper(key)+"="+repr_helper(item) for key, item
                 in inp.items())
     elif isinstance(inp, datetime):
-        return as_local(inp).isoformat()
+        return as_local(inp.encode('utf-8')).isoformat()
 
-    return str(inp)
+    elif isinstance(inp, unicode):
+        return '{}'.format(inp.encode('utf-8'))
+
+    return '{}'.format(inp)
 
 class HomeAssistantError(Exception):
     """General Home Assistant exception occurred."""
@@ -175,12 +185,14 @@ class State(object):
         last_changed = json_dict.get('last_changed')
 
         if isinstance(last_changed, (unicode, str)):
-            last_changed = parse_datetime(last_changed)
+            #last_changed = parse_datetime(last_changed)
+            last_changed = DateParser.parse(last_changed)
 
         last_updated = json_dict.get('last_updated')
 
         if isinstance(last_updated, (unicode, str)):
-            last_updated = parse_datetime(last_updated)
+            #last_updated = parse_datetime(last_updated)
+            last_updated = DateParser.parse(last_updated)
 
         return cls(json_dict['entity_id'], json_dict['state'],
                    json_dict.get('attributes'), last_changed, last_updated)
