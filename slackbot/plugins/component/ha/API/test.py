@@ -32,6 +32,7 @@ print('\n-- Available entities:')
 entities = remote.get_states(api)
 for entity in entities:
     print(entity.entity_id)
+    print(entity.attributes.get('status', entity.state))
     #print(entity)
 
 print('\n-- vacuum.xiaomi_vacuum_cleaner state:')

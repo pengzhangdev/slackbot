@@ -20,8 +20,9 @@ from types import DictProxyType
 import requests
 import pytz
 import dateutil.parser as DateParser
+import logging
 
-#_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 HTTP_HEADER_HA_AUTH = 'X-HA-access'
 SERVER_PORT = 8123
