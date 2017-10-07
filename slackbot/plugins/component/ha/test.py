@@ -31,5 +31,37 @@ for event in events:
 print('\n-- Available entities:')
 entities = remote.get_states(api)
 for entity in entities:
+    print(entity.entity_id)
+    #print(entity)
+
+print('\n-- vacuum.xiaomi_vacuum_cleaner state:')
+entry = remote.get_state(api, 'vacuum.xiaomi_vacuum_cleaner')
+print(entry)
+
+print('\n-- history of all entiites: ')
+
+entities = remote.get_histories(api)
+for entity in entities:
     print(entity)
+
+print('\n-- history of vacuum.xiaomi_vacuum_cleaner')
+histories = remote.get_history(api, 'vacuum.xiaomi_vacuum_cleaner')
+for item in histories:
+    print(item)
+
+import sys
+sys.exit(1)
+
+print('\n-- update vacuum.xiaomi_vacuum_cleaner state:')
+domain='vacuum'
+name = 'vacuum.xiaomi_vacuum_cleaner'
+remote.call_service(api, domain, 'turn_on', {'entity_id': '{}'.format(name)})
+import time
+time.sleep(20)
+entry = remote.get_state(api, 'vacuum.xiaomi_vacuum_cleaner')
+print(entry)
+remote.call_service(api, domain, 'turn_off', {'entity_id': '{}'.format(name)})
+time.sleep(20)
+entry = remote.get_state(api, 'vacuum.xiaomi_vacuum_cleaner')
+print(entry)
 

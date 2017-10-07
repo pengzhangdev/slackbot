@@ -33,6 +33,8 @@ URL_API_CONFIG = '/api/config'
 URL_API_SERVICES_SERVICE = '/api/services/{}/{}'
 URL_API_STATES = '/api/states'
 URL_API_STATES_ENTITY = '/api/states/{}'
+URL_API_HISTORIES = '/api/history/period'
+URL_API_HISTORIES_ENTITY= '/api/history/period?filter_entity_id={}'
 HTTP_HEADER_CONTENT_TYPE = 'Content-type'
 CONTENT_TYPE_JSON = 'application/json'
 
@@ -377,6 +379,7 @@ def get_state(api, entity_id):
         req = api(METHOD_GET, URL_API_STATES_ENTITY.format(entity_id))
 
         # req.status_code == 422 if entity does not exist
+        #print('{}'.format(req.json()))
 
         return State.from_dict(req.json()) \
             if req.status_code == 200 else None
@@ -510,3 +513,37 @@ def get_config(api):
         _LOGGER.exception("Got unexpected configuration results")
 
         return {}
+
+def get_histories(api):
+    """Return histories of all states"""
+    try:
+        req = api(METHOD_GET, URL_API_HISTORIES)
+
+        if req.status_code != 200:
+            return []
+
+        result = req.json()
+        #print(result)
+        histories = []
+        for items in req.json() :
+            for item in items:
+                histories.append(State.from_dict(item))
+        return histories
+
+    except (HomeAssistantError, ValueError, AttributeError):
+        # ValueError if req.json() can't parse the json
+        _LOGGER.exception("Error fetching history")
+
+        return []
+def get_history(api, entity_id):
+    """Return hisory of the id in 1 day"""
+    try:
+        req = api(METHOD_GET, URL_API_HISTORIES_ENTITY.format(entity_id))
+        #print(req.json()[0])
+        return [State.from_dict(item) for
+        item in req.json()[0]]
+    except (HomeAssistantError, ValueError, AttributeError):
+        # ValueError if req.json() can't parse the json
+        _LOGGER.exception("Error fetching history")
+
+        return []
