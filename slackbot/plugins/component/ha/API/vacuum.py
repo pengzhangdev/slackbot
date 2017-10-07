@@ -20,7 +20,7 @@ import time
 _LOGGER = logging.getLogger(__name__)
 
 class Vacuum(object):
-    """Vaccumm API"""
+    """Vacuum API"""
     CHARGING='Charging'
     CLEANING='Cleaning'
     ERROR='Error'
@@ -28,8 +28,6 @@ class Vacuum(object):
         self._api = remote.API('http://192.168.31.100', '')
         self._valid = str(remote.validate_api(self._api)) == 'ok'
         self._domain = 'vacuum'
-        self._state = None
-        self._state_time = 0
 
     def start(self, name):
         if not self._valid:
@@ -53,12 +51,8 @@ class Vacuum(object):
     def get_state(self, name):
         if not self._valid:
             return (False, "API Invalid")
-        if self._state != None and time.time() - self._state_time < 10:
-            entry = self._state
-        else:
-            entry = remote.get_state(self._api, name)
-            self._state = entry
-            self._state_time = time.time()
+
+        entry = remote.get_state(self._api, name)
         return entry.attributes.get('status', entry.state)
 
     def get_history(self, name):
@@ -77,16 +71,10 @@ class Vacuum(object):
     def get_error(self, name):
         if not self._valid:
             return (False, "API Invalid")
-        if self._state != None and time.time() - self._state_time < 10:
-            entry = self._state
-        else:
-            entry = remote.get_state(self._api, name)
-            self._state = entry
-            self._state_time = time.time()
+
+        entry = remote.get_state(self._api, name)
         status = entry.attributes.get('status', entry.state)
         return entry.attributes.get('error', 'OK')
-
-
 
 if __name__ == '__main__':
     logging.basicConfig()
