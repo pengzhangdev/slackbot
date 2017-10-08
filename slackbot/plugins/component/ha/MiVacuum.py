@@ -84,11 +84,11 @@ class MiVacuum(object):
         #     return
 
         state = self.state()
-        _LOGGER.debug("state = {}".format(state))
+        _LOGGER.info("state = {}".format(state))
         if state == MiVacuum.ERROR:
             return
 
-        _LOGGER.debug("_started = {}".format(self._started))
+        _LOGGER.info("_started = {}".format(self._started))
         if self._started == True:
             if state == MiVacuum.CHARGING:
                 self._started = False
@@ -96,7 +96,7 @@ class MiVacuum(object):
 
         for history in self.history():
             if history.get('status', '') == MiVacuum.CLEANING:
-                _LOGGER.debug("Cleaning in the past 24h")
+                _LOGGER.info("Cleaning in the past 24h")
                 return
 
         self.start()
