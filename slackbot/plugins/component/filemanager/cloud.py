@@ -108,6 +108,7 @@ class Cloud(object):
             _LOGGER.info("first init upload {} success".format(path))
             self.__update_sessions('delete', path)
         _LOGGER.debug("done first init")
+        self._pool.add_task(('monitor', ''))
 
     def __update_sessions(self, method, filepath):
         if method == 'add':
