@@ -29,11 +29,16 @@ import logging
 import sys
 import os
 import re
+import hashlib
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.INFO)
 
-
+def md5sum(contents):
+    _LOGGER.debug(contents)
+    hash = hashlib.md5()
+    hash.update(contents)
+    return hash.hexdigest()
 
 class dysfz(object):
     """"""
@@ -92,16 +97,18 @@ class dysfz(object):
             if li.p.find(attrs={'rel':'nofollow', 'target':'_blank'}) == None:
                 continue
             movie_url = li.h2.a['href']
-            db_url = li.p.find(attrs={'rel':'nofollow', 'target':'_blank'})['href']
+            db_url = li.p.find(attrs={'rel':'nofollow', 'target':'_blank'})['href'].encode('utf-8')
             dbscore = self._get_dbsccore(db_url)
             movie_name = '{}({})'.format(li.h2.a.string.encode('utf-8'), dbscore)
+            movie_title = li.h2.a.string.encode('utf-8')
+            movie_hash = md5sum(movie_title+db_url)
             all_year = re.findall(r'【\d+】', movie_name)
             movie_year = year
             if len(all_year) > 0:
                 movie_year = int(all_year[0][3:-3])
                 _LOGGER.debug('movie_year: {}'.format(movie_year))
 
-            if db_url in self.ignore_list:
+            if movie_hash in self.ignore_list:
                 continue
 
             if dbscore <= 7:
@@ -114,7 +121,7 @@ class dysfz(object):
             _LOGGER.debug('{}'.format(li.p.span.string))
             _LOGGER.debug('{}\n{}\n{}'.format(movie_name, movie_url, db_url))
             movie_list.append((movie_name, movie_url, db_url))
-            self.ignore_list.append(db_url)
+            self.ignore_list.append(movie_hash)
 
         return movie_list
 

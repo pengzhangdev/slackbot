@@ -107,7 +107,8 @@ def HA_worker(message):
     for key in haconfig.keys:
         if haconfig.checkTime(key, now):
             obj = haconfig.getObject(key)
-            obj.automation()
+            if hasattr(obj, 'automation'):
+                obj.automation()
 
 @respond_to(r'ha (.*)')
 def ha_command(message, rest):
