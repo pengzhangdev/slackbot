@@ -38,6 +38,7 @@ class MiVacuum(object):
         _LOGGER.info("Init singleton MiVacuum")
         self._vacuum = Vacuum()
         self._started = False
+        self._suspend = False
 
     def __new__(cls, *args, **kw):
         if not cls._instance:
@@ -63,7 +64,6 @@ class MiVacuum(object):
             self._vacuum.stop(MiVacuum._NAME)
             self._started = False
 
-
     def locate(self):
         if self._vacuum:
             self._vacuum.locate(MiVacuum._NAME)
@@ -71,6 +71,10 @@ class MiVacuum(object):
     def state(self):
         if self._vacuum:
             return self._vacuum.get_state(MiVacuum._NAME)
+
+    def suspend(self, state):
+        # True or False
+        self._suspend = state
 
     def history(self):
         if self._vacuum:
@@ -82,6 +86,9 @@ class MiVacuum(object):
         # _LOGGER.debug("week = {}".format(week))
         # if week != 1 and week != 3 and week != 5:
         #     return
+
+        if self._suspend:
+            return
 
         state = self.state()
         _LOGGER.info("state = {}".format(state))

@@ -120,10 +120,10 @@ def ha_command(message, rest):
     domain = guess(domain, domain_list)
 
     if domain == 'help':
-        message.reply('ha mivacuum <start|stop|locate|status>')
+        message.reply('ha mivacuum <start|stop|locate|status|suspend|resume>')
     if domain in haconfig.keys:
         obj = haconfig.getObject(domain)
-        command_list = ['start', 'stop', 'locate', 'status']
+        command_list = ['start', 'stop', 'locate', 'status', 'suspend', 'resume']
         command = argv[2]
         command = guess(command, command_list)
         if command == 'start':
@@ -135,3 +135,7 @@ def ha_command(message, rest):
         if command == 'status':
             stat = obj.state()
             message.reply("The status of MiVacuum is {}".format(stat))
+        if command == 'suspend':
+            obj.suspend(True)
+        if command == 'resume':
+            obj.suspend(False)
