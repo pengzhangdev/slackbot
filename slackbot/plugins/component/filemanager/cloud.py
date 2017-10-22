@@ -154,8 +154,8 @@ class Cloud(object):
                 print(error)
                 print(error.fp.read())
 
-        try:
             buffer = resp.read()
+        try:
             rest = json.loads(buffer)
         except:
             _LOGGER.exception('Failed to convert to json: {}'.format(buffer))
@@ -166,17 +166,20 @@ class Cloud(object):
 
     def upload(self, filepath):
         """upload file to remote"""
+        _LOGGER.debug("resume uptime robot")
+        self._monitor.resume()
         self.__update_sessions('add', filepath)
         result, info = self.__upload_file(filepath, Cloud._BASE_URL)
         self.__update_sessions('delete', filepath)
+        self._pool.add_task(('monitor', ''))
 
         if result == False:
             _LOGGER.error(info)
             return (False, info)
 
-        self._pool.add_task(('monitor', ''))
-        _LOGGER.debug("resume uptime robot")
-        self._monitor.resume()
+        #self._pool.add_task(('monitor', ''))
+        #_LOGGER.debug("resume uptime robot")
+        #self._monitor.resume()
         return (True, info.get('url'))
 
     def __delete_file(self, filename, url):
