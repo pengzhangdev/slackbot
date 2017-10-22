@@ -41,7 +41,7 @@ class FileManager(object):
         filelists = self._cloud.list()
         for f in filelists:
             if filename == f.get('name', ''):
-                return (f.get('name'), f.get('size'), f.get('url'))
+                return (f.get('name'), str(f.get('size')), f.get('url'))
 
     def cloudRemoveFile(self, filename):
         return self._cloud.delete(filename)

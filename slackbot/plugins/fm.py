@@ -31,6 +31,11 @@ def guess(key, key_list):
         return c[0]
     return key
 
+def get_rest_args(body, arg):
+    index = body.find(arg)
+    rest = body[index:]
+    return rest
+
 @plugin_init
 def init_fm(config):
     global _enable
@@ -51,6 +56,7 @@ def fm_command(message, rest):
     if _fm == None:
         message.reply('FileManager is not enabled')
 
+    body = message.body.get('text', "")
     argv = message.body.get('text', "").split()
 
     domain_list = ['cloud']
@@ -65,18 +71,21 @@ def fm_command(message, rest):
         command = guess(command, command_list)
         if command == 'list':
             files = _fm.cloudList()
-            message.reply(', '.join(files))
+            message.reply('\n '.join(files))
         if command == 'upload':
-	    print("upload ")
-            status, url = _fm.cloudUpload(argv[3])
+            fname = get_rest_args(body, argv[3])
+	    print("upload fname")
+            status, url = _fm.cloudUpload(fname)
             if status:
                 message.reply("Upload Success {}".format(url))
             else:
                 message.reply("Upload Failed")
         if command == 'info':
-            info = _fm.cloudFileInfo(argv[3])
+            fname = get_rest_args(body, argv[3])
+            info = _fm.cloudFileInfo(fname)
             message.reply(', '.join(info))
 
         if command == 'remove':
-            res = _fm.cloudRemoveFile(argv[3])
-            message.reply('remove {} {}'.format(argv[3], 'successfully' if res else 'failed'))
+            fname = get_rest_args(body, argv[3])
+            res = _fm.cloudRemoveFile(fname)
+            message.reply('remove {} {}'.format(fname, 'successfully' if res else 'failed'))
