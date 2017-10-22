@@ -95,6 +95,7 @@ class Cloud(object):
     def __first_start(self):
         # read sessions and upload again
 
+        self._pool.add_task(('monitor', ''))
         if self._sessions == {}:
             return
 
