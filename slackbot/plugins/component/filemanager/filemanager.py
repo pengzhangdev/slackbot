@@ -25,9 +25,9 @@ class FileManager(object):
 
     def cloudUpload(self, path):
         if path.startswith('/'):
-            return self._cloud.upload(path)[1]
+            return self._cloud.upload(path)
         else:
-            return self._cloud.upload(os.path.join(FILEPATH_LOCAL, path))[1]
+            return self._cloud.upload(os.path.join(FILEPATH_LOCAL, path))
 
     def cloudList(self):
         files = []
@@ -42,4 +42,7 @@ class FileManager(object):
         for f in filelists:
             if filename == f.get('name', ''):
                 return (f.get('name'), f.get('size'), f.get('url'))
+
+    def cloudRemoveFile(self, filename):
+        return self._cloud.delete(filename)
 

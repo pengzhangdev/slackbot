@@ -13,6 +13,9 @@
 #
 #
 
+import sys
+import difflib
+
 from component.filemanager import FileManager
 
 from slackbot.bot import plugin_init
@@ -30,8 +33,7 @@ def guess(key, key_list):
 
 @plugin_init
 def init_fm(config):
-    global _anywhere
-
+    global _enable
     _enable = config.get('enable', False)
 
 @tick_task
@@ -57,19 +59,24 @@ def fm_command(message, rest):
 
     if domain == 'help':
         message.reply('fm cloud <list|upload|info>')
-        if domain == 'cloud':
-            command_list = ['list', 'upload', 'info']
-            command = argv[2]
-            command = guess(command, command_list)
-            if command == 'list':
-                files = _fm.cloudList()
-                message.reply(', '.join(files))
-            if command == 'upload':
-                status, url = _fm.cloudUpload(argv[3])
-                if status:
-                    message.reply("Upload Success {}".format(url))
-                else:
-                    message.reply("Upload Failed")
-            if command == 'info':
-                info = _fm.cloudFileInfo(argv[3])
-                message.reply(', '.join(info))
+    if domain == 'cloud':
+        command_list = ['list', 'upload', 'info', 'remove']
+        command = argv[2]
+        command = guess(command, command_list)
+        if command == 'list':
+            files = _fm.cloudList()
+            message.reply(', '.join(files))
+        if command == 'upload':
+	    print("upload ")
+            status, url = _fm.cloudUpload(argv[3])
+            if status:
+                message.reply("Upload Success {}".format(url))
+            else:
+                message.reply("Upload Failed")
+        if command == 'info':
+            info = _fm.cloudFileInfo(argv[3])
+            message.reply(', '.join(info))
+
+        if command == 'remove':
+            res = _fm.cloudRemoveFile(argv[3])
+            message.reply('remove {} {}'.format(argv[3], 'successfully' if res else 'failed'))
