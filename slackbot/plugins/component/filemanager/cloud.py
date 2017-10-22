@@ -95,8 +95,8 @@ class Cloud(object):
     def __first_start(self):
         # read sessions and upload again
 
-        self._pool.add_task(('monitor', ''))
         if self._sessions == {}:
+            self._pool.add_task(('monitor', ''))
             return
 
         uploadlist = self._sessions.get(Cloud._SESSION_TAG, [])
@@ -105,6 +105,7 @@ class Cloud(object):
             path = u['localpath']
             self.__update_sessions('add', path)
             _LOGGER.info("first init upload {} start".format(path))
+            self._monitor.resume()
             self.__upload_file(u['localpath'], Cloud._BASE_URL)
             _LOGGER.info("first init upload {} success".format(path))
             self.__update_sessions('delete', path)
