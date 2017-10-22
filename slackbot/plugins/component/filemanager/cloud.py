@@ -170,7 +170,7 @@ class Cloud(object):
         _LOGGER.debug("resume uptime robot")
         self._monitor.resume()
         self.__update_sessions('add', filepath)
-        result, info = self.__upload_file(filepath, Cloud._BASE_URL)
+        result, info = self.__upload_file(filepath.encode("utf-8"), Cloud._BASE_URL)
         self.__update_sessions('delete', filepath)
         self._pool.add_task(('monitor', ''))
 
