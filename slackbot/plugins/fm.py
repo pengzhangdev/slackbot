@@ -74,7 +74,7 @@ def fm_command(message, rest):
             message.reply('\n '.join(files))
         if command == 'upload':
             fname = get_rest_args(body, argv[3])
-	    print("upload {}".format(fname))
+	    message.reply("start upload {}".format(fname))
             status, url = _fm.cloudUpload(fname)
             if status:
                 message.reply("Upload Success {}".format(url))
