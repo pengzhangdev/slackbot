@@ -69,7 +69,12 @@ class dysfz(object):
         return BeautifulSoup(buff)
 
     def _get_dbsccore(self, dburl):
-        soup = self._create_soup(dburl)
+        try:
+            soup = self._create_soup(dburl)
+        except:
+            _LOGGER.exception("Failed to fetch {} ".format(dburl))
+            return 0.0
+
         item = soup.find(attrs={'class':'ll rating_num'})
         dbscore = item.string
         _LOGGER.debug('{}'.format(dbscore))
@@ -111,7 +116,7 @@ class dysfz(object):
             if movie_hash in self.ignore_list:
                 continue
 
-            if dbscore <= 7:
+            if dbscore < 7:
                 continue
 
             if movie_year < year - 1:
@@ -131,7 +136,10 @@ class dysfz(object):
         for i in (1, 2, 3):
             url = self._url.format(i)
             _LOGGER.debug('url: {}'.format(url))
-            soups.append(self._create_soup(url))
+            try:
+                soups.append(self._create_soup(url))
+            except:
+                _LOGGE.exeption("Failed to fetch {}".format(url))
         for soup in soups:
             contents += self._get_movie_list(soup)
         if len(contents) != 0:
