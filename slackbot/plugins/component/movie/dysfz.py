@@ -139,7 +139,7 @@ class dysfz(object):
             try:
                 soups.append(self._create_soup(url))
             except:
-                _LOGGE.exeption("Failed to fetch {}".format(url))
+                _LOGGER.exeption("Failed to fetch {}".format(url))
         for soup in soups:
             contents += self._get_movie_list(soup)
         if len(contents) != 0:
